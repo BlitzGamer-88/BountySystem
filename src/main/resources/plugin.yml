@@ -1,0 +1,6 @@
+name: BountySystem
+version: 1.0
+author: BlitzGamer_88
+main: me.blitzgamer_88.bountysystem.BountySystem
+api-version: 1.13
+softdepend: [PlaceholderAPI]
