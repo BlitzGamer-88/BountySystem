@@ -116,7 +116,6 @@ class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase()
         }
 
         conf().reload()
-        plugin.reloadBounties()
         SaveCache(plugin).runTask(plugin)
         GetCache(plugin).runTask(plugin)
         updateGui(plugin)
