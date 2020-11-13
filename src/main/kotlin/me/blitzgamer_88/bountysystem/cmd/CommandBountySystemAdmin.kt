@@ -105,6 +105,7 @@ class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase()
 
         conf().reload()
         plugin.reloadBounties()
+        loadDefaultGui(plugin)
         sender.sendMessage(configReloaded)
     }
 }

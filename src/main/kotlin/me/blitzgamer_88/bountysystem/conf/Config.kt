@@ -41,8 +41,8 @@ internal object Config : SettingsHolder {
     val bountyTax: Property<Int> = PropertyInitializer.newProperty("bountyTax", 5)
 
     @JvmField
-    @Comment("")
-    val runnableCoolDown: Property<Int> = PropertyInitializer.newProperty("runnableCoolDown", 5)
+    @Comment("Every how many minutes, the plugin checks to see if a bounty is expired.")
+    val expiryTimeCheck: Property<Int> = PropertyInitializer.newProperty("runnableCoolDown", 5)
 
     // GUI
     @JvmField

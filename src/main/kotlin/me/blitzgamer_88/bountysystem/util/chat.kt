@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 // Use the '&X' color format
@@ -18,6 +19,7 @@ fun String.log() = Bukkit.getConsoleSender().sendMessage(this.color())
 
 // Send Message To Player
 fun String.msg(player: Player) = player.sendMessage(this.color().parsePAPI(player))
+fun String.msg(sender: CommandSender) = sender.sendMessage(this.color())
 
 // Send Message To Everyone
 fun String.broadcast() = Bukkit.getServer().broadcastMessage(this.color())

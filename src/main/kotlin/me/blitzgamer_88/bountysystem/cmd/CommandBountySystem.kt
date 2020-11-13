@@ -8,15 +8,10 @@ import me.mattstudios.mf.annotations.Completion
 import me.mattstudios.mf.annotations.Default
 import me.mattstudios.mf.annotations.SubCommand
 import me.mattstudios.mf.base.CommandBase
-import me.mattstudios.mfgui.gui.components.ItemBuilder
-import me.mattstudios.mfgui.gui.guis.GuiItem
-import me.mattstudios.mfgui.gui.guis.PaginatedGui
 import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.Bukkit.getServer
-import org.bukkit.Material
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
 
@@ -31,88 +26,19 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         // Messages
         val noPermission = conf().getProperty(Config.noPermission)
         val noBountiesFound = conf().getProperty(Config.noBountiesFound)
-        val guiTitle = conf().getProperty(Config.guiTitle).color()
-        val itemTitle = conf().getProperty(Config.itemTitle)
-        val itemLore = conf().getProperty(Config.itemLore)
         // Others
         val ids = plugin.getBounties().getKeys(false)
-        val bountyTax = conf().getProperty(Config.bountyTax)
-        val bountyExpiryTime = conf().getProperty(Config.bountyExpiryTime)
 
         if (!sender.hasPermission(bountyOpenPermission)) {
             noPermission.msg(sender)
             return
         }
 
-        // CREATE AND OPEN A MENU WITH ALL BOUNTIES LISTED INSIDE
-
-        val idsSize = ids.size
-        if (idsSize < 1) {
+        if (ids.size < 1) {
             noBountiesFound.msg(sender)
             return
         }
-
-        val bounties = plugin.getBounties()
-        val bountyGui = PaginatedGui(6, 45, guiTitle)
-
-        bountyGui.setItem(6, 3, ItemBuilder.from(Material.PAPER).setName("&6Previous".color()).asGuiItem { bountyGui.previous() })
-        bountyGui.setItem(6, 7, ItemBuilder.from(Material.PAPER).setName("&6Next".color()).asGuiItem { bountyGui.next() })
-
-        val fillerGlass = ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1)
-        val fillerMeta = fillerGlass.itemMeta
-        if (fillerMeta != null) {
-            fillerMeta.setDisplayName(" ")
-            fillerGlass.itemMeta = fillerMeta
-        }
-        val fillerItem = GuiItem(fillerGlass)
-        bountyGui.filler.fillBottom(fillerItem)
-
-        var i = 0
-        for (id in ids) {
-            if (id.toIntOrNull() == null) continue
-            if (id.toInt() < minId || id.toInt() > maxId) continue
-
-            val targetUniqueIdString = bounties.getString("$id.target") ?: continue
-            val targetUniqueId = UUID.fromString(targetUniqueIdString)
-            val targetOfflinePlayer = getOfflinePlayer(targetUniqueId)
-
-            val payerUniqueIdString = bounties.getString("$id.placer") ?: continue
-            val payerUniqueId = UUID.fromString(payerUniqueIdString)
-            val payerOfflinePlayer = getOfflinePlayer(payerUniqueId)
-            val payerName = payerOfflinePlayer.name ?: continue
-
-            val amount = bounties.getString("$id.amount") ?: continue
-            val newAmount = amount.toInt() - ((bountyTax/100)*amount.toInt())
-            val placedTime = bounties.getLong("$id.placedTime")
-            val currentTime = System.currentTimeMillis() / 1000
-            val expiryTime = formatTime(bountyExpiryTime-(currentTime-placedTime))
-
-            val newItemLore: MutableList<String> = mutableListOf()
-
-            for (lore in itemLore) {
-                newItemLore.add(
-                    lore.color().replace("%amount%", newAmount.toString()).replace("%payer%", payerName).replace("%bountyId%", id).replace("%expiryTime%", expiryTime)
-                )
-            }
-
-            val head = ItemStack(Material.PLAYER_HEAD, 1)
-
-            val meta = head.itemMeta as SkullMeta
-            meta.owningPlayer = targetOfflinePlayer
-            meta.setDisplayName(itemTitle.parsePAPI(targetOfflinePlayer))
-            meta.lore = newItemLore
-            head.itemMeta = meta
-
-            val guiItem = GuiItem(head)
-            bountyGui.setItem(i, guiItem)
-
-            i++
-            if (i > 45) i=0
-        }
-
-        bountyGui.setDefaultClickAction { it.isCancelled = true }
-
-        bountyGui.open(sender)
+        bountyGui?.open(sender)
     }
 
 
@@ -167,7 +93,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         }
 
         // Check if the player is whitelisted first
-        if (sender.hasPermission(bountyByPassPermission)) {
+        if (targetPlayer.hasPermission(bountyByPassPermission)) {
             targetWhitelisted.msg(sender)
             return
         }
@@ -235,10 +161,11 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
 
         bountyPlacedSelf.replace("%target%", targetName).replace("%amount%", newAmount.toString()).replace("%bountyId%", newId).msg(sender)
         bountyPlacedEveryone.replace("%target%", targetName).replace("%amount%", newAmount.toString()).replace("%bountyId%", newId).broadcast()
+        updateGui(plugin)
     }
 
     @SubCommand("add")
-    fun bountyAddCommand(sender: Player, bountyId: String, @Completion("#amount") amt: Int?) {
+    fun bountyAddCommand(sender: Player, @Completion("#id") bountyId: String, @Completion("#amount") amt: Int?) {
 
         // Perms
         val bountyAddPermission = conf().getProperty(Config.bountyAddPermission)
@@ -289,10 +216,11 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         bounties.set("$bountyId.amount", newAmount)
         plugin.saveBounties()
         amountUpdated.replace("%newAmount%", amount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
+        updateGui(plugin)
     }
 
     @SubCommand("cancel")
-    fun bountyCancelCommand(sender: Player, bId: Int?) {
+    fun bountyCancelCommand(sender: Player, @Completion("#id") bId: Int?) {
 
         // Perms
         val bountyCancelPermission = conf().getProperty(Config.bountyCancelPermission)
@@ -338,5 +266,16 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         bounties.set(bountyId, null)
         plugin.saveBounties()
         bountyCanceled.replace("%bountyId%", bountyId).msg(sender)
+        updateGui(plugin)
     }
+
+    @SubCommand("help")
+    fun help(sender: CommandSender) {
+
+        "&7/bounty place <player> <amount> &8- &fPlace a bounty on a player's head".msg(sender)
+        "&7/bounty add <bountyID> <amount> &8- &fAdd more money to a bounty".msg(sender)
+        "&7/bounty cancel <bountyID> &8- &fCancel a bounty".msg(sender)
+
+    }
+
 }

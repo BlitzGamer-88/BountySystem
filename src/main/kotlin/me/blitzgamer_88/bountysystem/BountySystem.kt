@@ -4,6 +4,8 @@ import me.blitzgamer_88.bountysystem.cmd.CommandBountySystem
 import me.blitzgamer_88.bountysystem.cmd.CommandBountySystemAdmin
 import me.blitzgamer_88.bountysystem.conf.Config
 import me.blitzgamer_88.bountysystem.listener.PlayerDeathListener
+import me.blitzgamer_88.bountysystem.runnable.BountyExpire
+import me.blitzgamer_88.bountysystem.runnable.BountyUpdate
 import me.blitzgamer_88.bountysystem.util.*
 import me.bristermitten.pdm.PDMBuilder
 import me.mattstudios.mf.base.CommandManager
@@ -13,7 +15,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.IOException
-import java.io.Reader
 import java.util.logging.Level
 
     // TODO: Optimize shit.
@@ -23,30 +24,32 @@ class BountySystem : JavaPlugin() {
     override fun onEnable() {
         PDMBuilder(this).build().loadAllDependencies().join()
 
+        this.saveDefaultConfig()
+
         loadConfig(this)
+        loadDefaultGui(this)
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) { "Could not find PlaceholderAPI! This plugin is required".log() }
-        if (!setupEconomy() ) { "Could not find Vault! This plugin is required".log() }
+        if (!setupEconomy()) { "Could not find Vault! This plugin is required".log() }
 
         server.pluginManager.registerEvents(PlayerDeathListener(this), this)
 
         val cmdManager = CommandManager(this, true)
         cmdManager.completionHandler.register("#amount") { listOf("<amount>") }
+        cmdManager.completionHandler.register("#id") { listOf("<bountyID>") }
         cmdManager.register(CommandBountySystem(this))
         cmdManager.register(CommandBountySystemAdmin(this))
 
-        "Plugin Enabled!".log()
-
-        val runnableCoolDown = conf().getProperty(Config.runnableCoolDown)
+        val runnableCoolDown = conf().getProperty(Config.expiryTimeCheck)
         BountyExpire(this).runTaskTimer(this, 60 * 20L, runnableCoolDown * 60 * 20L)
+        BountyUpdate(this).runTaskTimer(this, 1200, 1200)
+
+        "[BountySystem] &7Plugin Enabled!".log()
     }
 
     override fun onDisable() {
-        "Plugin Disabled!".log()
+        "[BountySystem] &7Plugin Disabled!".log()
     }
-
-
-
 
 
     // BOUNTIES FILE
