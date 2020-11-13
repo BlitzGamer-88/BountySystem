@@ -2,13 +2,21 @@ package me.blitzgamer_88.bountysystem.cmd
 
 import me.blitzgamer_88.bountysystem.BountySystem
 import me.blitzgamer_88.bountysystem.conf.Config
-import me.blitzgamer_88.bountysystem.util.*
+import me.blitzgamer_88.bountysystem.util.chat.broadcast
+import me.blitzgamer_88.bountysystem.util.chat.msg
+import me.blitzgamer_88.bountysystem.util.chat.parsePAPI
+import me.blitzgamer_88.bountysystem.util.conf.conf
+import me.blitzgamer_88.bountysystem.util.conf.econ
+import me.blitzgamer_88.bountysystem.util.conf.maxId
+import me.blitzgamer_88.bountysystem.util.conf.minId
+import me.blitzgamer_88.bountysystem.util.gui.Bounty
+import me.blitzgamer_88.bountysystem.util.gui.bountyGui
+import me.blitzgamer_88.bountysystem.util.gui.updateGui
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Completion
 import me.mattstudios.mf.annotations.Default
 import me.mattstudios.mf.annotations.SubCommand
 import me.mattstudios.mf.base.CommandBase
-import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.Bukkit.getServer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -27,7 +35,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         val noPermission = conf().getProperty(Config.noPermission)
         val noBountiesFound = conf().getProperty(Config.noBountiesFound)
         // Others
-        val ids = plugin.getBounties().getKeys(false)
+        val ids = plugin.BOUNTIES_LIST.keys
 
         if (!sender.hasPermission(bountyOpenPermission)) {
             noPermission.msg(sender)
@@ -62,7 +70,6 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         // Others
         val maxBountiesPerPlayer = conf().getProperty(Config.maxBountiesPerPlayer)
         val bountyTax = conf().getProperty(Config.bountyTax)
-        val ids = plugin.getBounties().getKeys(false)
 
         if (!sender.hasPermission(bountyPlacePermission)) {
             noPermission.msg(sender)
@@ -98,13 +105,14 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        val bounties = plugin.getBounties()
+        val bounties = plugin.BOUNTIES_LIST
+        val ids = bounties.keys
 
         var bountiesCounter = 0
         for (id in ids) {
-            val placerUniqueIdString = bounties.getString("$id.placer")
-            val placerUniqueId = UUID.fromString(placerUniqueIdString)
-            if (sender.uniqueId == placerUniqueId) bountiesCounter++
+            val bounty = bounties[id] ?: continue
+            val payerUniqueIdString = bounty.payer
+            if (sender.uniqueId.toString() == payerUniqueIdString) bountiesCounter++
         }
 
         if (bountiesCounter >= maxBountiesPerPlayer) {
@@ -112,38 +120,29 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        // CHECK IF THERE IS A BOUNTY ON THAT PLAYER ALREADY AND RETURN IF THERE IS
-        var exists = false
+        // CHECK IF THERE IS A BOUNTY ON THAT PLAYER ALREADY AND STOP IF THERE IS
         for (id in ids) {
             val newId = id.toIntOrNull() ?: continue
             if (newId < minId || newId > maxId) continue
-            val targetUniqueIdString = bounties.getString("$id.target") ?: continue
+            val bounty = bounties[id] ?: continue
+            val targetUniqueIdString = bounty.target ?: continue
             val targetUniqueId = UUID.fromString(targetUniqueIdString)
-            val targetOfflinePlayer = getOfflinePlayer(targetUniqueId)
-            val targetOfflinePlayerName = targetOfflinePlayer.name ?: continue
-            if (targetOfflinePlayerName == targetName) {
-                exists = true
-                break
+            if (targetUniqueId == targetPlayer.uniqueId) {
+                targetHasBounty.msg(sender)
+                return
             }
-        }
-        if (exists) {
-            targetHasBounty.msg(sender)
-            return
         }
 
         // IF THERE IS NO BOUNTY ON THAT PLAYER, PLACE ONE. FIRST CREATE A NEW BOUNTY ID
         var bountyId = (minId..maxId).random()
         var idExists = true
         while (idExists) {
-            idExists = false
-            bountyId = (minId..maxId).random()
-            for (id in ids) {
-                if (id.toIntOrNull() == null) continue
-                if (bountyId == id.toInt()) {
-                    idExists = true
-                    continue
-                }
+            val string = bountyId.toString()
+            if (!ids.contains(string)) {
+                idExists = false
+                break
             }
+            bountyId = (minId..maxId).random()
         }
 
         val newId = bountyId.toString()
@@ -151,11 +150,14 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
 
         // NOW CREATE THE BOUNTY
         econ?.withdrawPlayer(sender, amount.toDouble())
-        bounties.set("$newId.target", targetPlayer.uniqueId.toString())
-        bounties.set("$newId.placer", sender.uniqueId.toString())
-        bounties.set("$newId.amount", amount)
-        bounties.set("$newId.placedTime", currentTimeInSeconds)
-        plugin.saveBounties()
+        val newBounty = Bounty()
+        newBounty.id = bountyId
+        newBounty.target = targetPlayer.uniqueId.toString()
+        newBounty.payer = sender.uniqueId.toString()
+        newBounty.amount = amount
+        newBounty.placedTime = currentTimeInSeconds
+
+        plugin.BOUNTIES_LIST[newId] = newBounty
 
         val newAmount = amount - ((bountyTax/100)*amount)
 
@@ -176,7 +178,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         val notYourBounty = conf().getProperty(Config.notYourBounty)
         val amountUpdated = conf().getProperty(Config.amountUpdated)
         // Others
-        val ids = plugin.getBounties().getKeys(false)
+        val ids = plugin.BOUNTIES_LIST.keys
 
         if (!sender.hasPermission(bountyAddPermission)) {
             noPermission.msg(sender)
@@ -200,21 +202,21 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         }
 
         // CHECK IF BOUNTY IS PLACED BY SENDER
-        val bounties = plugin.getBounties()
-        val placerUniqueIdString = bounties.getString("$bountyId.placer") ?: return
-        val placerUniqueId = UUID.fromString(placerUniqueIdString)
-        val senderUUID = sender.uniqueId
+        val bounties = plugin.BOUNTIES_LIST
+        val bounty = bounties[bountyId] ?: return
+        val placerUniqueIdString = bounty.payer ?: return
+        val senderUUIDString = sender.uniqueId.toString()
 
-        if (placerUniqueId != senderUUID) {
+        if (placerUniqueIdString != senderUUIDString) {
             notYourBounty.replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val savedAmount = bounties.getInt("$bountyId.amount")
+        val savedAmount = bounty.amount ?: return
         val newAmount = savedAmount+amount
         econ?.withdrawPlayer(sender, amount.toDouble())
-        bounties.set("$bountyId.amount", newAmount)
-        plugin.saveBounties()
+        bounty.amount = newAmount
+        plugin.BOUNTIES_LIST[bountyId] = bounty
         amountUpdated.replace("%newAmount%", amount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
         updateGui(plugin)
     }
@@ -231,7 +233,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         val notYourBounty = conf().getProperty(Config.notYourBounty)
         val bountyCanceled = conf().getProperty(Config.bountyCanceled)
         // Others
-        val ids = plugin.getBounties().getKeys(false)
+        val ids = plugin.BOUNTIES_LIST.keys
 
         if (!sender.hasPermission(bountyCancelPermission)) {
             noPermission.msg(sender)
@@ -250,21 +252,20 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         }
 
         // CHECK IF BOUNTY IS PLACED BY SENDER
-        val bounties = plugin.getBounties()
-        val placerUniqueIdString = bounties.getString("$bountyId.placer") ?: return
-        val placerUniqueId = UUID.fromString(placerUniqueIdString)
-        val senderUUID = sender.uniqueId
+        val bounties = plugin.BOUNTIES_LIST
+        val bounty = bounties[bountyId] ?: return
+        val placerUniqueIdString = bounty.payer ?: return
+        val senderUUIDString = sender.uniqueId.toString()
 
-        if (placerUniqueId != senderUUID) {
+        if (placerUniqueIdString != senderUUIDString) {
             notYourBounty.replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
         // REMOVE BOUNTY
-        val amount = bounties.getInt("$bountyId.amount")
+        val amount = bounty.amount ?: return
         econ?.depositPlayer(sender, amount.toDouble())
-        bounties.set(bountyId, null)
-        plugin.saveBounties()
+        plugin.BOUNTIES_LIST.remove(bountyId)
         bountyCanceled.replace("%bountyId%", bountyId).msg(sender)
         updateGui(plugin)
     }

@@ -6,7 +6,14 @@ import me.blitzgamer_88.bountysystem.conf.Config
 import me.blitzgamer_88.bountysystem.listener.PlayerDeathListener
 import me.blitzgamer_88.bountysystem.runnable.BountyExpire
 import me.blitzgamer_88.bountysystem.runnable.BountyUpdate
-import me.blitzgamer_88.bountysystem.util.*
+import me.blitzgamer_88.bountysystem.runnable.GetCache
+import me.blitzgamer_88.bountysystem.runnable.SaveCache
+import me.blitzgamer_88.bountysystem.util.chat.log
+import me.blitzgamer_88.bountysystem.util.conf.conf
+import me.blitzgamer_88.bountysystem.util.conf.loadConfig
+import me.blitzgamer_88.bountysystem.util.conf.setupEconomy
+import me.blitzgamer_88.bountysystem.util.gui.Bounty
+import me.blitzgamer_88.bountysystem.util.gui.loadDefaultGui
 import me.bristermitten.pdm.PDMBuilder
 import me.mattstudios.mf.base.CommandManager
 import org.bukkit.Bukkit
@@ -17,9 +24,9 @@ import java.io.File
 import java.io.IOException
 import java.util.logging.Level
 
-    // TODO: Optimize shit.
-
 class BountySystem : JavaPlugin() {
+
+    var BOUNTIES_LIST = HashMap<String, Bounty>()
 
     override fun onEnable() {
         PDMBuilder(this).build().loadAllDependencies().join()
@@ -27,6 +34,8 @@ class BountySystem : JavaPlugin() {
         this.saveDefaultConfig()
 
         loadConfig(this)
+
+        GetCache(this).runTask(this)
         loadDefaultGui(this)
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) { "Could not find PlaceholderAPI! This plugin is required".log() }
@@ -42,12 +51,14 @@ class BountySystem : JavaPlugin() {
 
         val runnableCoolDown = conf().getProperty(Config.expiryTimeCheck)
         BountyExpire(this).runTaskTimer(this, 60 * 20L, runnableCoolDown * 60 * 20L)
-        BountyUpdate(this).runTaskTimer(this, 1200, 1200)
+        BountyUpdate(this).runTaskTimer(this, 200, 200)
+        SaveCache(this).runTaskTimer(this, 6000, 6000)
 
         "[BountySystem] &7Plugin Enabled!".log()
     }
 
     override fun onDisable() {
+        SaveCache(this).runTask(this)
         "[BountySystem] &7Plugin Disabled!".log()
     }
 

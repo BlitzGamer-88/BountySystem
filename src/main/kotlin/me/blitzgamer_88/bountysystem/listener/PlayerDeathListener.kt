@@ -2,7 +2,15 @@ package me.blitzgamer_88.bountysystem.listener
 
 import me.blitzgamer_88.bountysystem.BountySystem
 import me.blitzgamer_88.bountysystem.conf.Config
-import me.blitzgamer_88.bountysystem.util.*
+import me.blitzgamer_88.bountysystem.util.chat.broadcast
+import me.blitzgamer_88.bountysystem.util.chat.color
+import me.blitzgamer_88.bountysystem.util.chat.msg
+import me.blitzgamer_88.bountysystem.util.conf.conf
+import me.blitzgamer_88.bountysystem.util.conf.econ
+import me.blitzgamer_88.bountysystem.util.conf.maxId
+import me.blitzgamer_88.bountysystem.util.conf.minId
+import me.blitzgamer_88.bountysystem.util.gui.updateGui
+import me.blitzgamer_88.bountysystem.util.wg.locationInWGRegion
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -20,8 +28,8 @@ class PlayerDeathListener(private val plugin: BountySystem) : Listener {
         val killerLocation = killer.location
         val killerWorld = killer.world
 
-        val bounties = plugin.getBounties()
-        val ids = plugin.getBounties().getKeys(false)
+        val bounties = plugin.BOUNTIES_LIST
+        val ids = bounties.keys
 
         val bountyReceived = conf().getProperty(Config.bountyReceived)
         val bountyReceivedBroadcast = conf().getProperty(Config.bountyReceivedBroadcast).color()
@@ -35,25 +43,27 @@ class PlayerDeathListener(private val plugin: BountySystem) : Listener {
             val newId = id.toIntOrNull() ?: continue
             if (newId < minId || newId > maxId) continue
 
-            val payerUniqueIdString = bounties.getString("$id.placer") ?: return
+            val bounty = bounties[id] ?: continue
+
+            val payerUniqueIdString = bounty.payer ?: continue
             val payerUniqueId = UUID.fromString(payerUniqueIdString)
 
-            val targetUniqueIdString = bounties.getString("$id.target")
+            val targetUniqueIdString = bounty.target ?: continue
             val targetUniqueId = UUID.fromString(targetUniqueIdString)
             val targetOfflinePlayer = Bukkit.getOfflinePlayer(targetUniqueId)
-            val targetOnlinePlayer = targetOfflinePlayer.player ?: return
+            val targetOnlinePlayer = targetOfflinePlayer.player ?: continue
 
-            if (targetOnlinePlayer != killed) return
+            if (targetOnlinePlayer != killed) continue
             if (killer.uniqueId == payerUniqueId) return
-            if (killed.uniqueId == targetUniqueId) return
+            if (killed.uniqueId != targetUniqueId) continue
             if (useWorlds && !enabledWorlds.contains(killerWorld.name)) return
             if (useRegions && !locationInWGRegion(killerLocation)) return
 
-            val amount = bounties.getInt("$id.amount")
+            val amount = bounty.amount ?: continue
             val newAmount = amount - ((bountyTax/100)*amount)
             econ?.depositPlayer(killer, newAmount.toDouble())
-            bounties.set(id, null)
-            plugin.saveBounties()
+            plugin.BOUNTIES_LIST.remove(id)
+            updateGui(plugin)
             bountyReceived.replace("%amount%", newAmount.toString()).replace("%target%", killed.name ).msg(killer)
             PlaceholderAPI.setPlaceholders(killer, bountyReceivedBroadcast.replace("%amount%", newAmount.toString()).replace("%target%", killed.name)).broadcast()
             return
