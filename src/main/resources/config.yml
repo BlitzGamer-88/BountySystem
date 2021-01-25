@@ -1,8 +1,8 @@
 # Whether or not the plugin should check if the kill is in one of the listed regions.
-useRegions: false
+use-regions: false
 
 # Whether or not the plugin should check if the kill is in one of the listed worlds.
-useWorlds: false
+use-worlds: false
 
 # List all regions where players should be able to claim bounties.
 enabled_regions:
@@ -14,61 +14,40 @@ enabled_worlds:
   - world
   - world_the_end
 
-# How many bounties can a player set at a time.
-maxBountiesPerPlayer: 2
+# How many bounties can a player place at the same time.
+max-bounties: 2
 
 # How much time does it take for a bounty to expire if no one kills the target.
-bountyExpiryTime: 259200
+bounty-expiry-time: 259200
 
 # Specify how many percents the server takes from the bounty. Make it 0 so the player that gets the kill takes all the money.
-bountyTax: 5
+bounty-tax: 5
 
-# Every how many minutes, the plugin checks to see if a bounty is expired.
-expiryTimeCheck: 5
+# Every how many seconds, the plugin checks to see if a bounty is expired.
+expiry-check-interval: 300
 
-# /bounty GUI title. You can use any PAPI placeholder.
-guiTitle: '&cBounties'
+# Interval in seconds for cached data to be saved
+cache-save-interval: 300
 
-# /bounty items title. You can use any PAPI placeholder.
-itemTitle: '&5Target: &c%player_name%'
+time-format:
+  days: 'd '
+  hours: 'h '
+  minutes: 'm '
+  seconds: 's'
 
-# /bounty items lore. You can use the placeholders: %payer%, %amount%, %bountyId%. Also you can use any PAPI placeholder.
-itemLore:
+# GUIs SETTINGS
+filler-item:
+  material: 'BLACK_STAINED_GLASS_PANE'
+  name: ' '
+
+next-page-name: '&6Next'
+previous-page-name: '&6Previous'
+
+gui-title: '&cBounties'
+item-name: '&5Target: &c%player_name%'
+item-lore:
   - ''
   - '&ePayer: &6%payer%'
   - '&eBounty: &6%amount%$'
   - '&eID: &6%bountyId%'
   - '&eExpires in: &6%expiryTime%'
-
-bountyOpenPermission: bountysystem.open
-bountyPlacePermission: bountysystem.place
-bountyAddPermission: bountysystem.add
-bountyCancelPermission: bountysystem.cancel
-bountyByPassPermission: bountysystem.bypass
-adminBountyCancelPermission: bountysystem.admin.cancel
-adminBypassPermission: bountysystem.admin.bypass
-adminReloadPermission: bountysystem.admin.reload
-adminPermission: bountysystem.admin
-
-playerNotFound: '&7Could not find player. Make sure the player is online and you''ve typed the correct
-  name.'
-notYourBounty: '&7Bounty with id &c%bountyId%&7 was not placed by you.'
-bountyNotFound: '&7Could not find bounty with id &c%bountyId%&7.'
-configReloaded: '&aConfig Reloaded.'
-wrongUsage: '&cWrong Usage.'
-noPermission: '&cYou don''t have permission for this.'
-targetHasBounty: '&7There is already a bounty on that player.'
-notEnoughMoney: '&7You don''t have enough money.'
-targetWhitelisted: '&7You can''t place a bounty on that player.'
-noBountiesFound: '&7There are no bounties at the moment.'
-bountyOnYourself: '&7You can''t place a bounty on yourself.'
-bountyPlacedSelf: '&7You''ve placed a bounty on &a%target%&7 of &e%amount%$&7. Bounty ID: &a%bountyId%.'
-bountyPlacedEveryone: '&a%player_name%&7 has placed a &e%amount%$&7 bounty on &a%target%&7''s head!'
-bountyCanceled: '&7You have canceled the bounty with the id &c%bountyId%&7.'
-bountyCanceledByAdmin: '&7An admin has canceled your bounty with the id &c%bountyId%&7.'
-playerWhitelisted: '&7You have whitelisted &c%player_name%&7.'
-bountyReceived: '&7You have killed %target% and collected a &e%amount%$&7 bounty.'
-maxBounties: '&7You have reached the maximum amounts of bounties you can place at a time.'
-bountyExpired: '&7Your bounty has expired and no one claimed it.'
-bountyReceivedBroadcast: '&c%player_name%&7 has killed &e%target%&7 and received &e%amount%$&7.'
-amountUpdated: '&7Added another &e%newAmount%$ &7to the old amount of &e%oldAmount%$&7.'

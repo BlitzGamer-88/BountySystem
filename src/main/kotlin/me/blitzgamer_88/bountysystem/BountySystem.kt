@@ -1,87 +1,97 @@
 package me.blitzgamer_88.bountysystem
 
-import me.blitzgamer_88.bountysystem.cmd.CommandBountySystem
-import me.blitzgamer_88.bountysystem.cmd.CommandBountySystemAdmin
-import me.blitzgamer_88.bountysystem.conf.Config
+import com.google.gson.Gson
+import me.blitzgamer_88.bountysystem.bounty.Bounty
+import me.blitzgamer_88.bountysystem.database.Database
+import me.blitzgamer_88.bountysystem.commands.CommandBountySystem
+import me.blitzgamer_88.bountysystem.commands.CommandBountySystemAdmin
 import me.blitzgamer_88.bountysystem.listener.PlayerDeathListener
 import me.blitzgamer_88.bountysystem.runnable.BountyExpire
-import me.blitzgamer_88.bountysystem.runnable.BountyUpdate
-import me.blitzgamer_88.bountysystem.runnable.GetCache
 import me.blitzgamer_88.bountysystem.runnable.SaveCache
-import me.blitzgamer_88.bountysystem.util.chat.log
-import me.blitzgamer_88.bountysystem.util.conf.conf
-import me.blitzgamer_88.bountysystem.util.conf.loadConfig
-import me.blitzgamer_88.bountysystem.util.conf.setupEconomy
-import me.blitzgamer_88.bountysystem.util.gui.Bounty
-import me.blitzgamer_88.bountysystem.util.gui.loadDefaultGui
-import me.bristermitten.pdm.PDMBuilder
+import me.blitzgamer_88.bountysystem.runnable.UpdateGui
+import me.blitzgamer_88.bountysystem.util.*
+import me.mattstudios.mf.base.CommandBase
 import me.mattstudios.mf.base.CommandManager
-import org.bukkit.Bukkit
-import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
+import me.mattstudios.mf.base.components.CompletionResolver
+import me.mattstudios.mf.base.components.MessageResolver
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitTask
 import java.io.File
-import java.io.IOException
-import java.util.logging.Level
+
 
 class BountySystem : JavaPlugin() {
 
-    var BOUNTIES_LIST = HashMap<String, Bounty>()
+    private lateinit var commandManager: CommandManager
+    private lateinit var bountyExpire: BukkitTask
+    private lateinit var saveCache: BukkitTask
+    private lateinit var updateGui: BukkitTask
+    lateinit var database: Database
 
     override fun onEnable() {
-        PDMBuilder(this).build().loadAllDependencies().join()
+
+        database = Database(this)
 
         this.saveDefaultConfig()
+        this.saveDefaultMessages()
 
-        loadConfig(this)
+        loadSettings(this)
+        loadMessages(this)
 
-        GetCache(this).runTask(this)
-        loadDefaultGui(this)
+        registerSettings()
+        registerMessages()
 
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) { "Could not find PlaceholderAPI! This plugin is required".log() }
-        if (!setupEconomy()) { "Could not find Vault! This plugin is required".log() }
+        if (!setupPAPI()) { "[BountySystem] Could not find PlaceholderAPI! This plugin is required".log() }
+        if (!setupEconomy()) { "[BountySystem] Could not find Vault! This plugin is required".log() }
+        if (!setupPermissions()) { "[BountySystem] Could not find Vault! This plugin is required".log() }
 
-        server.pluginManager.registerEvents(PlayerDeathListener(this), this)
+        registerListeners(PlayerDeathListener())
 
-        val cmdManager = CommandManager(this, true)
-        cmdManager.completionHandler.register("#amount") { listOf("<amount>") }
-        cmdManager.completionHandler.register("#id") { listOf("<bountyID>") }
-        cmdManager.register(CommandBountySystem(this))
-        cmdManager.register(CommandBountySystemAdmin(this))
+        commandManager = CommandManager(this, true)
 
-        val runnableCoolDown = conf().getProperty(Config.expiryTimeCheck)
-        BountyExpire(this).runTaskTimer(this, 60 * 20L, runnableCoolDown * 60 * 20L)
-        BountyUpdate(this).runTaskTimer(this, 200, 200)
-        SaveCache(this).runTaskTimer(this, 6000, 6000)
+        registerMessage("cmd.no.permission") { sender -> noPermission.msg(sender) }
+        registerMessage("cmd.wrong.usage") { sender -> wrongUsage.msg(sender) }
 
-        "[BountySystem] &7Plugin Enabled!".log()
+        registerCompletion("#id") { listOf("<bountyID>") }
+        registerCompletion("#amount") { listOf("<amount>") }
+        registerCommands(CommandBountySystem(), CommandBountySystemAdmin(this))
+
+        database.load()
+        createGUI()
+
+        bountyExpire = BountyExpire().runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
+        saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
+        updateGui = UpdateGui().runTaskTimer(this, 20L, 20L)
+        "[BountySystem] Plugin enabled successfully!".log()
     }
 
     override fun onDisable() {
-        SaveCache(this).runTask(this)
-        "[BountySystem] &7Plugin Disabled!".log()
+        database.save()
+        "[BountySystem] Plugin disabled successfully!".log()
     }
 
-
-    // BOUNTIES FILE
-
-    private var bountyConfig: FileConfiguration? = null
-    private var bountiesFile: File? = null
-
-    fun reloadBounties() {
-        if (bountiesFile == null) bountiesFile = File(dataFolder, "bounties.yml")
-        bountyConfig = YamlConfiguration.loadConfiguration(bountiesFile!!)
+    fun reload() {
+        bountyExpire.cancel()
+        saveCache.cancel()
+        database.save()
+        msg.reload()
+        conf.reload()
+        bountyExpire = BountyExpire().runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
+        saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
     }
 
-    fun saveBounties() {
-        if (bountyConfig == null || bountiesFile == null) return
-        try { getBounties().save(bountiesFile!!) }
-        catch (ex: IOException) { Bukkit.getServer().logger.log(Level.SEVERE, "Could not save config to $bountiesFile", ex) }
+    private fun registerCommands(vararg commands: CommandBase) = commands.forEach(commandManager::register)
+    private fun registerCompletion(completionId: String, resolver: CompletionResolver) = commandManager.completionHandler.register(completionId, resolver)
+    private fun registerMessage(messageId: String, resolver: MessageResolver) = commandManager.messageHandler.register(messageId, resolver)
+    private fun registerListeners(vararg listeners: Listener) = listeners.forEach { server.pluginManager.registerEvents(it, this) }
+
+    fun saveDefaultMessages() {
+        if (File("messages.yml").exists()) return
+        saveResource("messages.yml", false)
     }
 
-    fun getBounties(): FileConfiguration {
-        if (bountyConfig == null) reloadBounties()
-        return checkNotNull(bountyConfig)
+    companion object {
+        val GSON = Gson()
+        var BOUNTIES_LIST = HashMap<String, Bounty>()
     }
-
 }

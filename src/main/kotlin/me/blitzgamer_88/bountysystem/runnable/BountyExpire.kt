@@ -1,51 +1,27 @@
 package me.blitzgamer_88.bountysystem.runnable
 
 import me.blitzgamer_88.bountysystem.BountySystem
-import me.blitzgamer_88.bountysystem.conf.Config
-import me.blitzgamer_88.bountysystem.util.chat.msg
-import me.blitzgamer_88.bountysystem.util.conf.conf
-import me.blitzgamer_88.bountysystem.util.conf.econ
-import me.blitzgamer_88.bountysystem.util.conf.maxId
-import me.blitzgamer_88.bountysystem.util.conf.minId
-import me.blitzgamer_88.bountysystem.util.gui.updateGui
+import me.blitzgamer_88.bountysystem.util.*
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 
-class BountyExpire(private val plugin: BountySystem) : BukkitRunnable() {
-
+class BountyExpire : BukkitRunnable() {
     override fun run() {
-
-        val bountyExpired = conf().getProperty(Config.bountyExpired)
-        val bountyExpiryTime = conf().getProperty(Config.bountyExpiryTime).toLong()
-
-        val bounties = plugin.BOUNTIES_LIST
-        val ids = plugin.BOUNTIES_LIST.keys
-
         val currentTimeInSeconds = System.currentTimeMillis() / 1000
+        for (bounty in BountySystem.BOUNTIES_LIST.values) {
+            val bountyId = bounty.id
+            if (bountyId< minId || bountyId > maxId) continue
+            if (currentTimeInSeconds - bounty.placedTime < bountyExpiryTime) return
 
-        for (id in ids) {
+            val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
+            econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
+            BountySystem.BOUNTIES_LIST.remove(bountyId.toString())
 
-            val newId = id.toIntOrNull() ?: continue
-            if (newId < minId || newId > maxId) continue
-
-            val bounty = bounties[id] ?: return
-            val placedTime = bounty.placedTime ?: return
-
-            val payerUniqueIdString = bounty.payer ?: return
-            val payerUniqueId = UUID.fromString(payerUniqueIdString)
-            val payerOfflinePlayer = Bukkit.getOfflinePlayer(payerUniqueId)
-            val payerOnlinePlayer = payerOfflinePlayer.player
-
-            if (currentTimeInSeconds - placedTime < bountyExpiryTime) return
-
-            val amount = bounty.amount ?: return
-
-            econ?.depositPlayer(payerOfflinePlayer, amount.toDouble())
-            plugin.BOUNTIES_LIST.remove(id)
-            if (payerOnlinePlayer != null) bountyExpired.msg(payerOnlinePlayer)
+            payerOfflinePlayer.player?.let {
+                bountyExpired.replace("%bountyId%", bountyId.toString()).msg(it)
+            }
         }
-        updateGui(plugin)
     }
 }

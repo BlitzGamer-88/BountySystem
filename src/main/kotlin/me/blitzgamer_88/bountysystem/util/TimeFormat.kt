@@ -1,7 +1,6 @@
-package me.blitzgamer_88.bountysystem.util.time
+package me.blitzgamer_88.bountysystem.util
 
 fun formatTime(totalSeconds: Long) : String {
-
     val totalMinutes = totalSeconds/60
     val totalHours = totalMinutes/60
 
@@ -10,5 +9,5 @@ fun formatTime(totalSeconds: Long) : String {
     val minutes = totalMinutes%60
     val seconds = totalSeconds%60
 
-    return days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m " + seconds.toString() + "s"
+    return days.toString() + daysFormat + hours.toString() + hoursFormat + minutes.toString() + minutesFormat + seconds.toString() + secondsFormat
 }
