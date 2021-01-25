@@ -8,7 +8,6 @@ import me.blitzgamer_88.bountysystem.commands.CommandBountySystemAdmin
 import me.blitzgamer_88.bountysystem.listener.PlayerDeathListener
 import me.blitzgamer_88.bountysystem.runnable.BountyExpire
 import me.blitzgamer_88.bountysystem.runnable.SaveCache
-import me.blitzgamer_88.bountysystem.runnable.UpdateGui
 import me.blitzgamer_88.bountysystem.util.*
 import me.mattstudios.mf.base.CommandBase
 import me.mattstudios.mf.base.CommandManager
@@ -22,11 +21,12 @@ import java.io.File
 
 class BountySystem : JavaPlugin() {
 
+    val BOUNTIES_LIST = mutableMapOf<String, Bounty>()
     private lateinit var commandManager: CommandManager
     private lateinit var bountyExpire: BukkitTask
     private lateinit var saveCache: BukkitTask
-    private lateinit var updateGui: BukkitTask
     lateinit var database: Database
+      private set
 
     override fun onEnable() {
 
@@ -45,7 +45,7 @@ class BountySystem : JavaPlugin() {
         if (!setupEconomy()) { "[BountySystem] Could not find Vault! This plugin is required".log() }
         if (!setupPermissions()) { "[BountySystem] Could not find Vault! This plugin is required".log() }
 
-        registerListeners(PlayerDeathListener())
+        registerListeners(PlayerDeathListener(this))
 
         commandManager = CommandManager(this, true)
 
@@ -54,14 +54,13 @@ class BountySystem : JavaPlugin() {
 
         registerCompletion("#id") { listOf("<bountyID>") }
         registerCompletion("#amount") { listOf("<amount>") }
-        registerCommands(CommandBountySystem(), CommandBountySystemAdmin(this))
+        registerCommands(CommandBountySystem(this), CommandBountySystemAdmin(this))
 
         database.load()
-        createGUI()
+        createGUI(this)
 
-        bountyExpire = BountyExpire().runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
+        bountyExpire = BountyExpire(this).runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
         saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
-        updateGui = UpdateGui().runTaskTimer(this, 20L, 20L)
         "[BountySystem] Plugin enabled successfully!".log()
     }
 
@@ -76,7 +75,7 @@ class BountySystem : JavaPlugin() {
         database.save()
         msg.reload()
         conf.reload()
-        bountyExpire = BountyExpire().runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
+        bountyExpire = BountyExpire(this).runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
         saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
     }
 
@@ -92,6 +91,5 @@ class BountySystem : JavaPlugin() {
 
     companion object {
         val GSON = Gson()
-        var BOUNTIES_LIST = HashMap<String, Bounty>()
     }
 }

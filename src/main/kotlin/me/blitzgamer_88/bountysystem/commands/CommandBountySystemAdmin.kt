@@ -16,19 +16,19 @@ class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase()
     @SubCommand("cancel")
     @Permission("bountysystem.admin.cancel", "bountysystem.admin")
     fun adminCancel(sender: CommandSender, bountyId: String) {
-        if (!BountySystem.BOUNTIES_LIST.keys.contains(bountyId)) {
+        if (!plugin.BOUNTIES_LIST.keys.contains(bountyId)) {
             sender.sendMessage(bountyNotFound.replace("%bountyID%", bountyId))
             return
         }
 
-        val bounty = BountySystem.BOUNTIES_LIST[bountyId] ?: run {
+        val bounty = plugin.BOUNTIES_LIST[bountyId] ?: run {
             bountyNotFound.msg(sender)
             return
         }
 
         val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
         econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
-        BountySystem.BOUNTIES_LIST.remove(bountyId)
+        plugin.BOUNTIES_LIST.remove(bountyId)
 
         bountyCanceled.replace("%bountyId%", bountyId).msg(sender)
         payerOfflinePlayer.player?.let {

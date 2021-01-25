@@ -9,7 +9,7 @@ import java.util.*
 
 lateinit var bountyGui: PaginatedGui
 
-fun createGUI() {
+fun createGUI(plugin: BountySystem) {
     bountyGui = PaginatedGui(6, 45, guiTitle)
     bountyGui.setItem(
         6,
@@ -34,7 +34,7 @@ fun createGUI() {
             .asGuiItem()
     )
 
-    val bounties = BountySystem.BOUNTIES_LIST
+    val bounties = plugin.BOUNTIES_LIST
 
     for (entry in bounties) {
         val id = entry.key.toIntOrNull() ?: continue

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.*
 
-class PlayerDeathListener : Listener {
+class PlayerDeathListener(private val plugin: BountySystem) : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDeath (event: PlayerDeathEvent) {
@@ -15,7 +15,7 @@ class PlayerDeathListener : Listener {
         val killed = event.entity
         val killer = killed.killer ?: return
 
-        for (bounty in BountySystem.BOUNTIES_LIST.values) {
+        for (bounty in plugin.BOUNTIES_LIST.values) {
             if (bounty.id < minId || bounty.id > maxId) continue
             if (UUID.fromString(bounty.target) != killed.uniqueId) continue
             if (UUID.fromString(bounty.payer) == killer.uniqueId) continue
@@ -24,7 +24,7 @@ class PlayerDeathListener : Listener {
 
             val finalAmount = bounty.amount - ((bountyTax / 100) * bounty.amount)
             econ.depositPlayer(killer, finalAmount.toDouble())
-            BountySystem.BOUNTIES_LIST.remove(bounty.id.toString())
+            plugin.BOUNTIES_LIST.remove(bounty.id.toString())
             bountyReceived
                 .replace("%amount%", finalAmount.toString())
                 .replace("%target%", killed.name )

@@ -14,9 +14,9 @@ class Database(private val plugin: BountySystem) {
             if (!File("bounties.json").exists()) plugin.dataFolder.resolve("bounties.json").createNewFile()
             if (File("bounties.json").length() == 0L) return
             val bounties: Collection<Bounty> = gson.fromJson(plugin.dataFolder.resolve("bounties.json").readText(), object : TypeToken<Collection<Bounty>>() {}.type)
-            BountySystem.BOUNTIES_LIST.clear()
+            plugin.BOUNTIES_LIST.clear()
             for (bounty in bounties) {
-                BountySystem.BOUNTIES_LIST[bounty.id.toString()] = bounty
+                plugin.BOUNTIES_LIST[bounty.id.toString()] = bounty
             }
         }
         catch (ex: Exception) {
@@ -26,7 +26,7 @@ class Database(private val plugin: BountySystem) {
 
     fun save() {
         try {
-            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(BountySystem.BOUNTIES_LIST.values))
+            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(plugin.BOUNTIES_LIST.values))
         }
         catch (ex: Exception) {
             plugin.logger.log(Level.SEVERE, "Could not save bounties!", ex)

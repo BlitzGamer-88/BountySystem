@@ -7,17 +7,17 @@ import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 
-class BountyExpire : BukkitRunnable() {
+class BountyExpire(private val plugin: BountySystem) : BukkitRunnable() {
     override fun run() {
         val currentTimeInSeconds = System.currentTimeMillis() / 1000
-        for (bounty in BountySystem.BOUNTIES_LIST.values) {
+        for (bounty in plugin.BOUNTIES_LIST.values) {
             val bountyId = bounty.id
             if (bountyId< minId || bountyId > maxId) continue
             if (currentTimeInSeconds - bounty.placedTime < bountyExpiryTime) return
 
             val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
             econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
-            BountySystem.BOUNTIES_LIST.remove(bountyId.toString())
+            plugin.BOUNTIES_LIST.remove(bountyId.toString())
 
             payerOfflinePlayer.player?.let {
                 bountyExpired.replace("%bountyId%", bountyId.toString()).msg(it)

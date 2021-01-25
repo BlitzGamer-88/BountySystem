@@ -10,16 +10,16 @@ import org.bukkit.entity.Player
 
 
 @Command("bounty")
-class CommandBountySystem : CommandBase() {
+class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
 
     @Default
     @Permission("bountysystem.open")
     fun openMenu(sender: Player) {
-        if (BountySystem.BOUNTIES_LIST.size < 1) {
+        if (plugin.BOUNTIES_LIST.isEmpty()) {
             noBountiesFound.msg(sender)
             return
         }
-        createGUI()
+        createGUI(plugin)
         bountyGui.open(sender)
     }
 
@@ -48,7 +48,7 @@ class CommandBountySystem : CommandBase() {
         }
 
         var bountiesCounter = 0
-        for (bounty in BountySystem.BOUNTIES_LIST.values) {
+        for (bounty in plugin.BOUNTIES_LIST.values) {
             if (bounty.id < minId || bounty.id > maxId) continue
             if (sender.uniqueId.toString() == bounty.payer) bountiesCounter++
         }
@@ -58,11 +58,11 @@ class CommandBountySystem : CommandBase() {
             return
         }
 
-        val bountyId = getRandomId()
+        val bountyId = getRandomId(plugin)
         if (bountyId == 0) return
 
         econ.withdrawPlayer(sender, amount.toDouble())
-        BountySystem.BOUNTIES_LIST[bountyId.toString()] = Bounty(
+        plugin.BOUNTIES_LIST[bountyId.toString()] = Bounty(
             bountyId,
             sender.uniqueId.toString(),
             target.uniqueId.toString(),
@@ -94,12 +94,12 @@ class CommandBountySystem : CommandBase() {
             return
         }
 
-        if (!BountySystem.BOUNTIES_LIST.keys.contains(bountyId)) {
+        if (!plugin.BOUNTIES_LIST.keys.contains(bountyId)) {
             bountyNotFound.replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = BountySystem.BOUNTIES_LIST[bountyId] ?: return
+        val bounty = plugin.BOUNTIES_LIST[bountyId] ?: return
         if (sender.uniqueId.toString() != bounty.payer) {
             notYourBounty.replace("%bountyId%", bountyId).msg(sender)
             return
@@ -111,7 +111,7 @@ class CommandBountySystem : CommandBase() {
         val savedAmount = bounty.amount
 
         bounty.amount = newAmount
-        BountySystem.BOUNTIES_LIST[bountyId] = bounty
+        plugin.BOUNTIES_LIST[bountyId] = bounty
 
         val finalAmount = newAmount - ((bountyTax / 100) * newAmount)
         amountUpdated.replace("%newAmount%", finalAmount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
@@ -125,19 +125,19 @@ class CommandBountySystem : CommandBase() {
             return
         }
 
-        if (!BountySystem.BOUNTIES_LIST.keys.contains(bountyId)) {
+        if (!plugin.BOUNTIES_LIST.keys.contains(bountyId)) {
             bountyNotFound.replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = BountySystem.BOUNTIES_LIST[bountyId] ?: return
+        val bounty = plugin.BOUNTIES_LIST[bountyId] ?: return
         if (sender.uniqueId.toString() != bounty.payer) {
             notYourBounty.replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
         econ.depositPlayer(sender, bounty.amount.toDouble())
-        BountySystem.BOUNTIES_LIST.remove(bountyId)
+        plugin.BOUNTIES_LIST.remove(bountyId)
         bountyCanceled.replace("%bountyId%", bountyId).msg(sender)
     }
 
