@@ -21,8 +21,6 @@ import java.io.File
 
 class BountySystem : JavaPlugin() {
 
-    // TESTING GIT
-
     val BOUNTIES_LIST = mutableMapOf<String, Bounty>()
     private lateinit var commandManager: CommandManager
     private lateinit var bountyExpire: BukkitTask
