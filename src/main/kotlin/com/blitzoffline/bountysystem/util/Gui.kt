@@ -1,6 +1,10 @@
 package com.blitzoffline.bountysystem.util
 
 import com.blitzoffline.bountysystem.BountySystem
+import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.config.holder.Bounties
+import com.blitzoffline.bountysystem.config.holder.Menu
+import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.runnable.minId
 import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
@@ -8,34 +12,33 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.util.*
 
-fun createGUI(plugin: BountySystem) : PaginatedGui {
-    val bountyGui = PaginatedGui(6, 45, guiTitle)
+fun createGUI(plugin: BountySystem): PaginatedGui {
+    val bountyGui = PaginatedGui(6, 54, settings[Menu.TITLE])
     bountyGui.setItem(
-        6,
-        3,
+        47,
         ItemBuilder
-            .from(Material.PAPER)
-            .setName(previousPageName)
+            .from(Material.valueOf(settings[Menu.PREVIOUS_PAGE_MATERIAL].toUpperCase()))
+            .setName(settings[Menu.PREVIOUS_PAGE_NAME].color())
+            .setLore(settings[Menu.PREVIOUS_PAGE_LORE].color())
             .asGuiItem { bountyGui.previous() }
     )
     bountyGui.setItem(
-        6,
-        7,
+        51,
         ItemBuilder
-            .from(Material.PAPER)
-            .setName(nextPagName)
+            .from(Material.valueOf(settings[Menu.NEXT_PAGE_MATERIAL].toUpperCase()))
+            .setName(settings[Menu.NEXT_PAGE_NAME].color())
+            .setLore(settings[Menu.NEXT_PAGE_LORE].color())
             .asGuiItem { bountyGui.next() }
     )
     bountyGui.filler.fillBottom(
         ItemBuilder
-            .from(fillerItemMaterial)
-            .setName(fillerItemName)
+            .from(Material.valueOf(settings[Menu.FILLER_MATERIAL].toUpperCase()))
+            .setName(settings[Menu.FILLER_NAME].color())
+            .setLore(settings[Menu.FILLER_LORE].color())
             .asGuiItem()
     )
 
-    val bounties = plugin.BOUNTIES_LIST
-
-    for (entry in bounties) {
+    for (entry in BOUNTIES_LIST) {
         val id = entry.key.toIntOrNull() ?: continue
         if (id < minId) continue
         val bounty = entry.value
@@ -44,27 +47,24 @@ fun createGUI(plugin: BountySystem) : PaginatedGui {
         val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
 
         val payerName = payerOfflinePlayer.name ?: continue
-        val finalAmount = bounty.amount - ((bountyTax / 100) * bounty.amount)
+        val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
         val currentTime = System.currentTimeMillis() / 1000
-        val expiryTime = formatTime(bountyExpiryTime - (currentTime - bounty.placedTime))
+        val expiryTime = formatTime(settings[Bounties.EXPIRY_TIME] - (currentTime - bounty.placedTime))
 
-        val newItemLore: MutableList<String> = mutableListOf()
-        for (line in itemLore) {
-            newItemLore.add(
-                line
-                    .replace("%amount%", finalAmount.toString())
-                    .replace("%bountyId%", id.toString())
-                    .replace("%expiryTime%", expiryTime)
-                    .replace("%payer%", payerName)
-            )
+        val lore = settings[Menu.BOUNTY_LORE].map {
+            it.color()
+            .replace("%amount%", finalAmount.toString())
+            .replace("%bountyId%", id.toString())
+            .replace("%expiryTime%", expiryTime)
+            .replace("%payer%", payerName)
         }
 
         bountyGui.addItem(
             ItemBuilder
                 .from(Material.PLAYER_HEAD)
-                .setLore(newItemLore)
+                .setLore(lore)
                 .setName(
-                    itemName
+                    settings[Menu.BOUNTY_NAME]
                     .replace("%amount%", finalAmount.toString())
                     .replace("%bountyId%", id.toString())
                     .replace("%expiryTime%", expiryTime)
@@ -76,6 +76,9 @@ fun createGUI(plugin: BountySystem) : PaginatedGui {
         )
     }
     bountyGui.setDefaultClickAction { it.isCancelled = true }
+
+    val task = plugin.server.scheduler.runTaskTimer(plugin, Runnable { bountyGui.update() }, 20L, 20L)
+    bountyGui.setCloseGuiAction { if(!task.isCancelled) task.cancel() }
 
     return bountyGui
 }

@@ -1,21 +1,23 @@
 package com.blitzoffline.bountysystem.listener
 
-import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
+import com.blitzoffline.bountysystem.config.messages
+import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.runnable.minId
-import com.blitzoffline.bountysystem.util.*
+import com.blitzoffline.bountysystem.util.broadcast
+import com.blitzoffline.bountysystem.util.isInCorrectWorldGuardRegion
+import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.parsePAPI
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.*
 
-class PlayerDeathListener(plugin: BountySystem) : Listener {
-    private val config = plugin.config
-    private val messages = plugin.messages
-
+class PlayerDeathListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDeath (event: PlayerDeathEvent) {
         val killed = event.entity
@@ -25,10 +27,10 @@ class PlayerDeathListener(plugin: BountySystem) : Listener {
             if (bounty.id < minId) continue
             if (UUID.fromString(bounty.target) != killed.uniqueId) continue
             if (UUID.fromString(bounty.payer) == killer.uniqueId) continue
-            if (config[Settings.WORLDS_USE] && !config[Settings.WORLDS_LIST].contains(killer.world.name)) return
-            if (config[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion(config[Settings.WORLDS_LIST])) return
+            if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].contains(killer.world.name)) return
+            if (settings[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion(settings[Settings.WORLDS_LIST])) return
 
-            val finalAmount = bounty.amount - ((config[Bounties.TAX] / 100) * bounty.amount)
+            val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
             econ.depositPlayer(killer, finalAmount.toDouble())
             BOUNTIES_LIST.remove(bounty.id.toString())
             messages[Messages.BOUNTY_RECEIVED]

@@ -2,25 +2,46 @@ package com.blitzoffline.bountysystem.config
 
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Bounties
-import com.blitzoffline.bountysystem.config.holder.GUI
+import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import me.mattstudios.config.SettingsManager
+import net.milkbowl.vault.economy.Economy
+import net.milkbowl.vault.permission.Permission
+import org.bukkit.Bukkit
 
-fun loadConfig(plugin: BountySystem) : SettingsManager {
+lateinit var settings: SettingsManager
+lateinit var messages: SettingsManager
+lateinit var econ: Economy
+lateinit var perms: Permission
+
+fun loadConfig(plugin: BountySystem) {
     val file = plugin.dataFolder.resolve("config.yml")
     if (!file.exists()) plugin.saveDefaultConfig()
-    return SettingsManager
+    settings = SettingsManager
         .from(file)
-        .configurationData(Bounties::class.java, GUI::class.java, Settings::class.java)
+        .configurationData(Bounties::class.java, Menu::class.java, Settings::class.java)
         .create()
 }
 
-fun loadMessages(plugin: BountySystem) : SettingsManager {
+fun loadMessages(plugin: BountySystem) {
     val file = plugin.dataFolder.resolve("messages.yml")
     if (!file.exists()) plugin.saveDefaultMessages()
-    return SettingsManager
+    messages =  SettingsManager
         .from(file)
         .configurationData(Messages::class.java)
         .create()
+}
+
+fun setupEconomy(): Boolean {
+    if (Bukkit.getServer().pluginManager.getPlugin("Vault") == null) return false
+    val rsp = Bukkit.getServer().servicesManager.getRegistration(Economy::class.java) ?: return false
+    econ = rsp.provider
+    return true
+}
+
+fun setupPermissions(): Boolean {
+    val rsp = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java) ?: return false
+    perms = rsp.provider
+    return true
 }

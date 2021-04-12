@@ -2,8 +2,11 @@ package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.util.*
+import com.blitzoffline.bountysystem.config.messages
+import com.blitzoffline.bountysystem.config.perms
+import com.blitzoffline.bountysystem.util.msg
 import me.mattstudios.mf.annotations.*
 import me.mattstudios.mf.base.CommandBase
 import org.bukkit.Bukkit
@@ -14,8 +17,6 @@ import java.util.*
 @Alias("badmin")
 @Command("bountyadmin")
 class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase() {
-    private val messages = plugin.messages
-
     @SubCommand("cancel")
     @Permission("bountysystem.admin.cancel", "bountysystem.admin")
     fun adminCancel(sender: CommandSender, bountyId: String) {

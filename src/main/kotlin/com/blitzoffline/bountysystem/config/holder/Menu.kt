@@ -4,12 +4,10 @@ import me.mattstudios.config.SettingsHolder
 import me.mattstudios.config.annotations.Path
 import me.mattstudios.config.properties.Property
 
-object GUI : SettingsHolder {
+object Menu : SettingsHolder {
 
     @Path("menu.title")
     val TITLE = Property.create("&cBounties")
-    @Path("menu.size")
-    val SIZE = Property.create(27)
 
     // ITEMS
     @Path("menu.items.filler.material")
@@ -33,8 +31,6 @@ object GUI : SettingsHolder {
     @Path("menu.items.previous-page.lore")
     val PREVIOUS_PAGE_LORE = Property.create(listOf<String>())
 
-    @Path("menu.items.bounty.material")
-    val BOUNTY_MATERIAL = Property.create("PAPER")
     @Path("menu.items.bounty.name")
     val BOUNTY_NAME = Property.create("&6Previous")
     @Path("menu.items.bounty.lore")

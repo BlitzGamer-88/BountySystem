@@ -2,11 +2,14 @@ package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
-import com.blitzoffline.bountysystem.util.*
 import com.blitzoffline.bountysystem.bounty.Bounty
+import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
+import com.blitzoffline.bountysystem.config.messages
+import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.runnable.minId
+import com.blitzoffline.bountysystem.util.*
 import me.mattstudios.mf.annotations.*
 import me.mattstudios.mf.base.CommandBase
 import org.bukkit.command.CommandSender
@@ -14,9 +17,6 @@ import org.bukkit.entity.Player
 
 @Command("bounty")
 class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
-    private val config = plugin.config
-    private val messages = plugin.messages
-
     @Default
     @Permission("bountysystem.open")
     fun openMenu(sender: Player) {
@@ -24,7 +24,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
             return
         }
-        val gui = createGUI(plugin)
+        val gui = createGUI()
         gui.open(sender)
     }
 
@@ -58,7 +58,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             if (sender.uniqueId.toString() == bounty.payer) bountiesCounter++
         }
 
-        if (bountiesCounter >= config[Bounties.MAX_AMOUNT]) {
+        if (bountiesCounter >= settings[Bounties.MAX_AMOUNT]) {
             messages[Messages.MAX_BOUNTIES].msg(sender)
             return
         }
@@ -75,7 +75,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             System.currentTimeMillis()/1000
         )
 
-        val finalAmount = amount.toInt() - ((config[Bounties.TAX] / 100) * amount.toInt())
+        val finalAmount = amount.toInt() - ((settings[Bounties.TAX] / 100) * amount.toInt())
         messages[Messages.BOUNTY_PLACED_SELF]
             .replace("%target%", target.name)
             .replace("%amount%", finalAmount.toString())
@@ -118,7 +118,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
         bounty.amount = newAmount
         BOUNTIES_LIST[bountyId] = bounty
 
-        val finalAmount = newAmount - ((config[Bounties.TAX] / 100) * newAmount)
+        val finalAmount = newAmount - ((settings[Bounties.TAX] / 100) * newAmount)
         messages[Messages.AMOUNT_UPDATED].replace("%newAmount%", finalAmount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
     }
 

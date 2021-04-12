@@ -1,10 +1,10 @@
 package com.blitzoffline.bountysystem.database
 
-import com.google.gson.reflect.TypeToken
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.util.logging.Level
 
