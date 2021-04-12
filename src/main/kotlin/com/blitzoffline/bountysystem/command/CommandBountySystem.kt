@@ -1,4 +1,4 @@
-package com.blitzoffline.bountysystem.commands
+package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.util.*

@@ -3,8 +3,8 @@ package com.blitzoffline.bountysystem
 import com.google.gson.Gson
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.database.Database
-import com.blitzoffline.bountysystem.commands.CommandBountySystem
-import com.blitzoffline.bountysystem.commands.CommandBountySystemAdmin
+import com.blitzoffline.bountysystem.command.CommandBountySystem
+import com.blitzoffline.bountysystem.command.CommandBountySystemAdmin
 import com.blitzoffline.bountysystem.listener.PlayerDeathListener
 import com.blitzoffline.bountysystem.runnable.BountyExpire
 import com.blitzoffline.bountysystem.runnable.SaveCache
