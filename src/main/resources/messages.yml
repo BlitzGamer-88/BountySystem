@@ -18,3 +18,8 @@ MAX-BOUNTIES: '&7You have reached the maximum amounts of bounties you can place 
 BOUNTY-EXPIRED: '&7Your %bountyId% bounty has expired and no one claimed it.'
 BOUNTY-RECEIVED-BROADCAST: '&c%player_name%&7 has killed &e%target%&7 and received &e%amount%$&7.'
 AMOUNT-UPDATED: '&7Added another &e%newAmount%$ &7to the old amount of &e%oldAmount%$&7.'
+TIME-FORMAT:
+  days: 'd '
+  hours: 'h '
+  minutes: 'm '
+  seconds: 's'

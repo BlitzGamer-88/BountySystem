@@ -1,53 +1,56 @@
-# Whether or not the plugin should check if the kill is in one of the listed regions.
-use-regions: false
+#  IF NEITHER REGIONS OR WORLDS ARE ENABLED, BOUNTIES CAN BE CLAIMED ANYWHERE.
+claim:
+  regions:
+    # If this option is enabled, The plugin will consider a kill only if its in one of the listed regions.
+    use: false
+    list:
+      - warzone
+      - warzone2
+  worlds:
+    # If this option is enabled, The plugin will consider a kill only if its in one of the listed worlds.
+    use: false
+    list:
+      - world
+      - world_the_end
 
-# Whether or not the plugin should check if the kill is in one of the listed worlds.
-use-worlds: false
+bounties:
+  # How many bounties can a player place at the same time.
+  max: 2
+  # How much does a bounty last for (in seconds)
+  expiry: 259200
+  # Specify how much from the bounty does the sever take. (percent)
+  # Set it to 0 so the player that kills the target gets 100% of the bounty.
+  tax: 5
 
-# List all regions where players should be able to claim bounties.
-enabled_regions:
-  - warzone
-  - warzone2
-
-# List all worlds where players should be able to claim bounties.
-enabled_worlds:
-  - world
-  - world_the_end
-
-# How many bounties can a player place at the same time.
-max-bounties: 2
-
-# How much time does it take for a bounty to expire if no one kills the target.
-bounty-expiry-time: 259200
-
-# Specify how many percents the server takes from the bounty. Make it 0 so the player that gets the kill takes all the money.
-bounty-tax: 5
-
-# Every how many seconds, the plugin checks to see if a bounty is expired.
-expiry-check-interval: 300
-
-# Interval in seconds for cached data to be saved
-cache-save-interval: 300
-
-time-format:
-  days: 'd '
-  hours: 'h '
-  minutes: 'm '
-  seconds: 's'
+intervals:
+  # Interval to check if any bounties have expired (in seconds)
+  expiry: 300
+  # Interval to save cached data (in seconds)
+  cache: 300
 
 # GUIs SETTINGS
-filler-item:
-  material: 'BLACK_STAINED_GLASS_PANE'
-  name: ' '
-
-next-page-name: '&6Next'
-previous-page-name: '&6Previous'
-
-gui-title: '&cBounties'
-item-name: '&5Target: &c%player_name%'
-item-lore:
-  - ''
-  - '&ePayer: &6%payer%'
-  - '&eBounty: &6%amount%$'
-  - '&eID: &6%bountyId%'
-  - '&eExpires in: &6%expiryTime%'
+menu:
+  title: '&cBounties'
+  items:
+    filler:
+      material: 'BLACK_STAINED_GLASS_PANE'
+      name: ' '
+      lore: []
+    next-page:
+      material: 'PAPER'
+      name: '&6Next'
+      lore: []
+    previous-page:
+      material: 'PAPER'
+      name: '&6Previous'
+      lore: []
+    # Local placeholders: %payer%, %amount%, %bountyId%, %expiryTime%
+    bounty:
+      material: 'MAP'
+      name: '&5Target: &c%player_name%'
+      lore:
+        - ''
+        - '&ePayer: &6%payer%'
+        - '&eBounty: &6%amount%$'
+        - '&eID: &6%bountyId%'
+        - '&eExpires in: &6%expiryTime%'
