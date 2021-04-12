@@ -24,7 +24,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
             return
         }
-        val gui = createGUI()
+        val gui = createGUI(plugin)
         gui.open(sender)
     }
 
