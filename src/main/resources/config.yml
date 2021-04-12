@@ -1,17 +1,16 @@
 #  IF NEITHER REGIONS OR WORLDS ARE ENABLED, BOUNTIES CAN BE CLAIMED ANYWHERE.
-claim:
-  regions:
-    # If this option is enabled, The plugin will consider a kill only if its in one of the listed regions.
-    use: false
-    list:
-      - warzone
-      - warzone2
-  worlds:
-    # If this option is enabled, The plugin will consider a kill only if its in one of the listed worlds.
-    use: false
-    list:
-      - world
-      - world_the_end
+regions:
+  # If this option is enabled, The plugin will consider a kill only if its in one of the listed regions.
+  use: false
+  list:
+    - warzone
+    - warzone2
+worlds:
+  # If this option is enabled, The plugin will consider a kill only if its in one of the listed worlds.
+  use: false
+  list:
+    - world
+    - world_the_end
 
 bounties:
   # How many bounties can a player place at the same time.
@@ -31,6 +30,7 @@ intervals:
 # GUIs SETTINGS
 menu:
   title: '&cBounties'
+  size: 27
   items:
     filler:
       material: 'BLACK_STAINED_GLASS_PANE'

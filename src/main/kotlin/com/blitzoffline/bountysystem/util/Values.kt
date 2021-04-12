@@ -1,7 +1,6 @@
 package com.blitzoffline.bountysystem.util
 
-import com.blitzoffline.bountysystem.config.sections.Messages
-import com.blitzoffline.bountysystem.config.sections.Settings
+import com.blitzoffline.bountysystem.config.holder.Settings
 import org.bukkit.Material
 
 const val minId = 1000
