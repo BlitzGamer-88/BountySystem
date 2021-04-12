@@ -34,6 +34,10 @@ dependencies {
     implementation 'me.mattstudios.utils:matt-framework-gui:2.0.3'
     // MF CONFIG
     implementation 'me.mattstudios:triumph-config:1.0.5-SNAPSHOT'
+    // ADVENTURE
+    implementation 'net.kyori:adventure-text-serializer-legacy:4.7.0'
+    // PLATFORMS
+    implementation 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
 
     // PLACEHOLDERAPI
     compileOnly 'me.clip:placeholderapi:2.10.9'

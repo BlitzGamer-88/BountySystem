@@ -9,12 +9,14 @@ import com.blitzoffline.bountysystem.database.Database
 import com.blitzoffline.bountysystem.listener.PlayerDeathListener
 import com.blitzoffline.bountysystem.runnable.BountyExpire
 import com.blitzoffline.bountysystem.runnable.SaveCache
+import com.blitzoffline.bountysystem.util.adventure
 import com.blitzoffline.bountysystem.util.log
 import com.blitzoffline.bountysystem.util.msg
 import me.mattstudios.mf.base.CommandBase
 import me.mattstudios.mf.base.CommandManager
 import me.mattstudios.mf.base.components.CompletionResolver
 import me.mattstudios.mf.base.components.MessageResolver
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -34,6 +36,7 @@ class BountySystem : JavaPlugin() {
         loadMessages(this)
 
         database = Database(this)
+        adventure = BukkitAudiences.create(this)
 
         if (!setupPAPI()) { "[BountySystem] Could not find PlaceholderAPI! This plugin is required".log(); pluginLoader.disablePlugin(this) }
         if (!setupEconomy()) { "[BountySystem] Could not find Vault! This plugin is required".log(); pluginLoader.disablePlugin(this) }
