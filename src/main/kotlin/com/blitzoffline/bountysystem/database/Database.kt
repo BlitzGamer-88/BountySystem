@@ -5,7 +5,6 @@ import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import java.io.File
 import java.util.logging.Level
 
 class Database(private val plugin: BountySystem) {
@@ -16,20 +15,24 @@ class Database(private val plugin: BountySystem) {
 
     fun load() {
         try {
-            if (!File("bounties.json").exists()) plugin.dataFolder.resolve("bounties.json").createNewFile()
-            if (File("bounties.json").length() == 0L) return
+            val file = plugin.dataFolder.resolve("bounties.json")
+
+            if (!file.exists()) plugin.dataFolder.resolve("bounties.json").createNewFile()
+            if (file.length() == 0L) return
 
             val token = object : TypeToken<Collection<Bounty>>() {}.type
             val bounties: Collection<Bounty> = gson.fromJson(plugin.dataFolder.resolve("bounties.json").readText(), token)
 
             BOUNTIES_LIST.clear()
 
+            var count = 0
             bounties.forEach {  bounty ->
-                    BOUNTIES_LIST[bounty.id.toString()] = bounty
-                }
+                BOUNTIES_LIST[bounty.id.toString()] = bounty
+                count++
+            }
         }
         catch (ex: java.lang.Exception) {
-            plugin.logger.log(Level.SEVERE, "Could not load bounties!", ex)
+            plugin.logger.log(Level.SEVERE, "Could not load the saved bounties!", ex)
         }
     }
 

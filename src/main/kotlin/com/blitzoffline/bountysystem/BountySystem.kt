@@ -57,9 +57,8 @@ class BountySystem : JavaPlugin() {
             CommandBountySystemAdmin(this)
         )
 
-        database.load()
         registerTasks()
-
+        database.load()
         "[BountySystem] Plugin enabled successfully!".log()
     }
 

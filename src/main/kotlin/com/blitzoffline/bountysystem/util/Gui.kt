@@ -10,10 +10,11 @@ import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
 fun createGUI(plugin: BountySystem): PaginatedGui {
-    val bountyGui = PaginatedGui(6, 54, settings[Menu.TITLE])
+    val bountyGui = PaginatedGui(6, 54, settings[Menu.TITLE].color())
     bountyGui.setItem(
         47,
         ItemBuilder
@@ -51,34 +52,37 @@ fun createGUI(plugin: BountySystem): PaginatedGui {
         val currentTime = System.currentTimeMillis() / 1000
         val expiryTime = formatTime(settings[Bounties.EXPIRY_TIME] - (currentTime - bounty.placedTime))
 
-        val lore = settings[Menu.BOUNTY_LORE].map {
-            it.color()
-            .replace("%amount%", finalAmount.toString())
-            .replace("%bountyId%", id.toString())
-            .replace("%expiryTime%", expiryTime)
-            .replace("%payer%", payerName)
-        }
-
         bountyGui.addItem(
             ItemBuilder
                 .from(Material.PLAYER_HEAD)
-                .setLore(lore)
+                .setLore(
+                    settings[Menu.BOUNTY_LORE].map {
+                        it.color()
+                            .replace("%amount%", finalAmount.toString())
+                            .replace("%bountyId%", id.toString())
+                            .replace("%expiryTime%", expiryTime)
+                            .replace("%payer%", payerName)
+                    }
+                )
                 .setName(
                     settings[Menu.BOUNTY_NAME]
-                    .replace("%amount%", finalAmount.toString())
-                    .replace("%bountyId%", id.toString())
-                    .replace("%expiryTime%", expiryTime)
-                    .replace("%payer%", payerName)
-                    .parsePAPI(targetOfflinePlayer)
+                        .replace("%amount%", finalAmount.toString())
+                        .replace("%bountyId%", id.toString())
+                        .replace("%expiryTime%", expiryTime)
+                        .replace("%payer%", payerName)
+                        .parsePAPI(targetOfflinePlayer)
+                        .color()
                 )
                 .setSkullOwner(targetOfflinePlayer)
                 .asGuiItem()
         )
     }
-    bountyGui.setDefaultClickAction { it.isCancelled = true }
+    bountyGui.setDefaultClickAction { it.isCancelled = true; }
 
-    val task = plugin.server.scheduler.runTaskTimer(plugin, Runnable { bountyGui.update() }, 20L, 20L)
-    bountyGui.setCloseGuiAction { if(!task.isCancelled) task.cancel() }
+    // TODO: Fix this shit vvvv
+    var task: BukkitTask? = null
+    bountyGui.setOpenGuiAction { task = plugin.server.scheduler.runTaskTimer(plugin, Runnable { bountyGui.update() }, 20L, 20L) }
+    bountyGui.setCloseGuiAction { if (task != null && !task!!.isCancelled) task!!.cancel(); task = null }
 
     return bountyGui
 }

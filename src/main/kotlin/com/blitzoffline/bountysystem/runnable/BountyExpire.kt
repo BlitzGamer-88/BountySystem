@@ -19,7 +19,7 @@ class BountyExpire : BukkitRunnable() {
         for (bounty in BOUNTIES_LIST.values) {
             val bountyId = bounty.id
             if (bountyId < minId) continue
-            if (currentTimeInSeconds - bounty.placedTime < settings[Bounties.EXPIRY_TIME]) return
+            if (currentTimeInSeconds - bounty.placedTime < settings[Bounties.EXPIRY_TIME]) continue
 
             val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
             econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
