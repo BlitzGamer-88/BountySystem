@@ -4,7 +4,7 @@ import me.mattstudios.config.SettingsHolder
 import me.mattstudios.config.annotations.Path
 import me.mattstudios.config.properties.Property
 
-object Bounty : SettingsHolder {
+object Bounties : SettingsHolder {
     @Path("bounties.max")
     val MAX_AMOUNT = Property.create(2)
     @Path("bounties.expiry")

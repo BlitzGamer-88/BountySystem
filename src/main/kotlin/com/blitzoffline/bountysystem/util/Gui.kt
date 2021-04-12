@@ -1,16 +1,15 @@
 package com.blitzoffline.bountysystem.util
 
 import com.blitzoffline.bountysystem.BountySystem
+import com.blitzoffline.bountysystem.runnable.minId
 import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import java.util.*
 
-lateinit var bountyGui: PaginatedGui
-
-fun createGUI(plugin: BountySystem) {
-    bountyGui = PaginatedGui(6, 45, guiTitle)
+fun createGUI(plugin: BountySystem) : PaginatedGui {
+    val bountyGui = PaginatedGui(6, 45, guiTitle)
     bountyGui.setItem(
         6,
         3,
@@ -38,7 +37,7 @@ fun createGUI(plugin: BountySystem) {
 
     for (entry in bounties) {
         val id = entry.key.toIntOrNull() ?: continue
-        if (id > maxId || id < minId) continue
+        if (id < minId) continue
         val bounty = entry.value
 
         val targetOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.target))
@@ -77,4 +76,6 @@ fun createGUI(plugin: BountySystem) {
         )
     }
     bountyGui.setDefaultClickAction { it.isCancelled = true }
+
+    return bountyGui
 }

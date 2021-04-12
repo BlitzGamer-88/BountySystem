@@ -1,35 +1,41 @@
 package com.blitzoffline.bountysystem.listener
 
 import com.blitzoffline.bountysystem.BountySystem
+import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.config.holder.Bounties
+import com.blitzoffline.bountysystem.config.holder.Messages
+import com.blitzoffline.bountysystem.config.holder.Settings
+import com.blitzoffline.bountysystem.runnable.minId
 import com.blitzoffline.bountysystem.util.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.*
 
-class PlayerDeathListener(private val plugin: BountySystem) : Listener {
+class PlayerDeathListener(plugin: BountySystem) : Listener {
+    private val config = plugin.config
+    private val messages = plugin.messages
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDeath (event: PlayerDeathEvent) {
-
         val killed = event.entity
         val killer = killed.killer ?: return
 
-        for (bounty in plugin.BOUNTIES_LIST.values) {
-            if (bounty.id < minId || bounty.id > maxId) continue
+        for (bounty in BOUNTIES_LIST.values) {
+            if (bounty.id < minId) continue
             if (UUID.fromString(bounty.target) != killed.uniqueId) continue
             if (UUID.fromString(bounty.payer) == killer.uniqueId) continue
-            if (useWorlds && !enabledWorlds.contains(killer.world.name)) return
-            if (useRegions && !killer.location.isInCorrectWorldGuardRegion()) return
+            if (config[Settings.WORLDS_USE] && !config[Settings.WORLDS_LIST].contains(killer.world.name)) return
+            if (config[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion(config[Settings.WORLDS_LIST])) return
 
-            val finalAmount = bounty.amount - ((bountyTax / 100) * bounty.amount)
+            val finalAmount = bounty.amount - ((config[Bounties.TAX] / 100) * bounty.amount)
             econ.depositPlayer(killer, finalAmount.toDouble())
-            plugin.BOUNTIES_LIST.remove(bounty.id.toString())
-            bountyReceived
+            BOUNTIES_LIST.remove(bounty.id.toString())
+            messages[Messages.BOUNTY_RECEIVED]
                 .replace("%amount%", finalAmount.toString())
                 .replace("%target%", killed.name )
                 .msg(killer)
-            bountyReceivedBroadcast
+            messages[Messages.BOUNTY_RECEIVED_BROADCAST]
                 .replace("%amount%", finalAmount.toString())
                 .replace("%target%", killed.name)
                 .parsePAPI(killer)

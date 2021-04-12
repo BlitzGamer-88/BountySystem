@@ -1,7 +1,7 @@
 package com.blitzoffline.bountysystem.config
 
 import com.blitzoffline.bountysystem.BountySystem
-import com.blitzoffline.bountysystem.config.holder.Bounty
+import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.GUI
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
@@ -12,7 +12,7 @@ fun loadConfig(plugin: BountySystem) : SettingsManager {
     if (!file.exists()) plugin.saveDefaultConfig()
     return SettingsManager
         .from(file)
-        .configurationData(Bounty::class.java, GUI::class.java, Settings::class.java)
+        .configurationData(Bounties::class.java, GUI::class.java, Settings::class.java)
         .create()
 }
 

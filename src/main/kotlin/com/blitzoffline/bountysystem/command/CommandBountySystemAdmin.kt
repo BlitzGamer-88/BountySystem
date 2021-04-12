@@ -1,6 +1,8 @@
 package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.BountySystem
+import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.util.*
 import me.mattstudios.mf.annotations.*
 import me.mattstudios.mf.base.CommandBase
@@ -12,27 +14,28 @@ import java.util.*
 @Alias("badmin")
 @Command("bountyadmin")
 class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase() {
+    private val messages = plugin.messages
 
     @SubCommand("cancel")
     @Permission("bountysystem.admin.cancel", "bountysystem.admin")
     fun adminCancel(sender: CommandSender, bountyId: String) {
-        if (!plugin.BOUNTIES_LIST.keys.contains(bountyId)) {
-            sender.sendMessage(bountyNotFound.replace("%bountyID%", bountyId))
+        if (!BOUNTIES_LIST.keys.contains(bountyId)) {
+            sender.sendMessage(messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyId))
             return
         }
 
-        val bounty = plugin.BOUNTIES_LIST[bountyId] ?: run {
-            bountyNotFound.msg(sender)
+        val bounty = BOUNTIES_LIST[bountyId] ?: run {
+            messages[Messages.BOUNTY_NOT_FOUND].msg(sender)
             return
         }
 
         val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
         econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
-        plugin.BOUNTIES_LIST.remove(bountyId)
+        BOUNTIES_LIST.remove(bountyId)
 
-        bountyCanceled.replace("%bountyId%", bountyId).msg(sender)
+        messages[Messages.BOUNTY_CANCELED].replace("%bountyId%", bountyId).msg(sender)
         payerOfflinePlayer.player?.let {
-            bountyCanceledByAdmin.replace("%bountyId%", bountyId).msg(it)
+            messages[Messages.BOUNTY_CANCELED_ADMIN].replace("%bountyId%", bountyId).msg(it)
         }
     }
 
@@ -40,13 +43,13 @@ class CommandBountySystemAdmin(private val plugin: BountySystem) : CommandBase()
     @Permission("bountysystem.admin.bypass", "bountysystem.admin")
     fun adminBypass(sender: CommandSender, @Completion("#players") player: Player) {
         perms.playerAdd(player, "bountysystem.bypass")
-        playerWhitelisted.msg(sender)
+        messages[Messages.PLAYER_WHITELISTED].msg(sender)
     }
 
     @SubCommand("reload")
     @Permission("bountysystem.admin.reload", "bountysystem.admin")
     fun adminReload(sender: CommandSender) {
         plugin.reload()
-        configReloaded.msg(sender)
+        messages[Messages.CONFIG_RELOADED].msg(sender)
     }
 }
