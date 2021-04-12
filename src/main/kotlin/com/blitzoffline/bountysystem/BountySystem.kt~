@@ -76,8 +76,8 @@ class BountySystem : JavaPlugin() {
     }
 
     private fun registerTasks() {
-        if(::CACHE_SAVING.isInitialized && !CACHE_SAVING.isCancelled) CACHE_SAVING.cancel()
-        if(::BOUNTY_EXPIRATION.isInitialized && !BOUNTY_EXPIRATION.isCancelled) BOUNTY_EXPIRATION.cancel()
+        if(!CACHE_SAVING.isCancelled) CACHE_SAVING.cancel()
+        if(!BOUNTY_EXPIRATION.isCancelled) BOUNTY_EXPIRATION.cancel()
 
         CACHE_SAVING = SaveCache(this).runTaskTimer(this, settings[Settings.INTERVAL_CACHE] * 20L, settings[Settings.INTERVAL_CACHE] * 20L)
         BOUNTY_EXPIRATION = BountyExpire().runTaskTimer(this, settings[Settings.INTERVAL_EXPIRY] * 20L, settings[Settings.INTERVAL_EXPIRY] * 20L)
