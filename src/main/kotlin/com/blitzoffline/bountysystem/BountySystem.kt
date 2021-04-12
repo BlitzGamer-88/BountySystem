@@ -47,7 +47,6 @@ class BountySystem : JavaPlugin() {
         )
 
         commandManager = CommandManager(this, true)
-
         registerMessage("cmd.no.permission") { sender -> messages[Messages.NO_PERMISSION].msg(sender) }
         registerMessage("cmd.wrong.usage") { sender -> messages[Messages.WRONG_USAGE].msg(sender) }
         registerCompletion("#id") { listOf("<bountyID>") }
@@ -58,10 +57,8 @@ class BountySystem : JavaPlugin() {
         )
 
         database.load()
-        createGUI(this)
+        registerTasks()
 
-        bountyExpire = BountyExpire(this).runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
-        saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
         "[BountySystem] Plugin enabled successfully!".log()
     }
 
@@ -72,19 +69,17 @@ class BountySystem : JavaPlugin() {
 
     fun reload() {
         database.save()
-        messages.reload()
         config.reload()
-        bountyExpire = BountyExpire(this).runTaskTimer(this, expiryCheckInterval * 20L, expiryCheckInterval * 20L)
-        saveCache = SaveCache(this).runTaskTimer(this, cacheSaveInterval * 20L, cacheSaveInterval * 20L)
+        messages.reload()
+        registerTasks()
     }
 
-    fun registerTasks() {
+    private fun registerTasks() {
         if(!CACHE_SAVING.isCancelled) CACHE_SAVING.cancel()
         if(!BOUNTY_EXPIRATION.isCancelled) BOUNTY_EXPIRATION.cancel()
 
         CACHE_SAVING = SaveCache(this).runTaskTimer(this, config[Settings.INTERVAL_CACHE] * 20L, config[Settings.INTERVAL_CACHE] * 20L)
-        BOUNTY_EXPIRATION = BountyExpire(this).runTaskTimer(this, config[Settings.INTERVAL_EXPIRY] * 20L, config[Settings.INTERVAL_EXPIRYR] * 20L)
-
+        BOUNTY_EXPIRATION = BountyExpire(this).runTaskTimer(this, config[Settings.INTERVAL_EXPIRY] * 20L, config[Settings.INTERVAL_EXPIRY] * 20L)
     }
 
     private fun registerCommands(vararg commands: CommandBase) = commands.forEach(commandManager::register)
