@@ -14,17 +14,11 @@ lateinit var adventure: BukkitAudiences
 val specialSerializer = LegacyComponentSerializer.builder().hexColors().useUnusualXRepeatedCharacterHexFormat().build()
 val legacySerializer = LegacyComponentSerializer.legacyAmpersand()
 
-fun String.color(): String = specialSerializer.serialize(legacySerializer.deserialize(this))
-fun MutableList<String>.color(): MutableList<String> {
-    val result = mutableListOf<String>()
-    for(line in this) {
-        result.add(line.color())
-    }
-    return result
-}
+fun String.color() = specialSerializer.serialize(legacySerializer.deserialize(this))
+fun List<String>.color() = map { it.color() }
 
-fun String.parsePAPI(player: Player): String = PlaceholderAPI.setPlaceholders(player, this)
-fun String.parsePAPI(player: OfflinePlayer): String = PlaceholderAPI.setPlaceholders(player, this)
+fun String.parsePAPI(player: Player) = PlaceholderAPI.setPlaceholders(player, this)
+fun String.parsePAPI(player: OfflinePlayer) = PlaceholderAPI.setPlaceholders(player, this)
 
 fun String.log() = Bukkit.getConsoleSender().sendMessage(this.color())
 
