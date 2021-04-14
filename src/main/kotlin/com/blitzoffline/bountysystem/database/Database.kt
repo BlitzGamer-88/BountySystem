@@ -13,6 +13,7 @@ class Database(private val plugin: BountySystem) {
         .setPrettyPrinting()
         .serializeNulls()
         .create()
+    private var forceStopped = false
 
     fun load() {
         var count = 0
@@ -36,12 +37,15 @@ class Database(private val plugin: BountySystem) {
             else "[BountySystem] Found ${bounties.size} bounties but could only load $count of them.".log()
         }
         catch (ex: java.lang.Exception) {
+            forceStopped = true
             plugin.logger.log(Level.SEVERE, "Could not load the saved bounties!", ex)
+            plugin.pluginLoader.disablePlugin(plugin)
         }
     }
 
     fun save() {
         try {
+            if (forceStopped) return
             plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(BOUNTIES_LIST.values))
         }
         catch (ex: java.lang.Exception) {
