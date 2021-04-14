@@ -53,7 +53,7 @@ class BountySystem : JavaPlugin() {
         registerCompletion("#id") { listOf("<bountyID>") }
         registerCompletion("#amount") { listOf("<amount>") }
         registerCommands(
-            CommandBountySystem(this),
+            CommandBountySystem(),
             CommandBountySystemAdmin(this)
         )
 

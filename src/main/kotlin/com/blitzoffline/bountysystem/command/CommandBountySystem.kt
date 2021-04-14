@@ -1,6 +1,5 @@
 package com.blitzoffline.bountysystem.command
 
-import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.config.econ
@@ -16,7 +15,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @Command("bounty")
-class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
+class CommandBountySystem : CommandBase() {
     @Default
     @Permission("bountysystem.open")
     fun openMenu(sender: Player) {
@@ -24,7 +23,7 @@ class CommandBountySystem(private val plugin: BountySystem) : CommandBase() {
             messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
             return
         }
-        val gui = createGUI(plugin)
+        val gui = createGUI()
         gui.open(sender)
     }
 
