@@ -1,6 +1,7 @@
 name: BountySystem
 version: @version@
-author: BlitzGamer_88
+author: BlitzOffline
 main: com.blitzoffline.bountysystem.BountySystem
+website: github.com/BlitzOffline
 api-version: 1.13
 softdepend: [PlaceholderAPI, Vault, WorldGuard]

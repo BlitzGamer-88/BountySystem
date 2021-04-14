@@ -7,6 +7,7 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import com.blitzoffline.bountysystem.database.Database
 import com.blitzoffline.bountysystem.listener.PlayerDeathListener
+import com.blitzoffline.bountysystem.placeholders.BountyPlaceholders
 import com.blitzoffline.bountysystem.runnable.BountyExpire
 import com.blitzoffline.bountysystem.runnable.SaveCache
 import com.blitzoffline.bountysystem.util.adventure
@@ -42,6 +43,8 @@ class BountySystem : JavaPlugin() {
         if (!setupEconomy()) { "[BountySystem] Could not find Vault! This plugin is required".log(); pluginLoader.disablePlugin(this) }
         if (!setupPermissions()) { "[BountySystem] Could not find Vault! This plugin is required".log(); pluginLoader.disablePlugin(this) }
         if (!setupWG() && settings[Settings.REGIONS_USE]) { "[BountySystem] Could not find WorldGuard! Disable regions.use if you don't want to use WorldGuard".log(); pluginLoader.disablePlugin(this) }
+
+        BountyPlaceholders(this).register()
 
         registerListeners(
             PlayerDeathListener()

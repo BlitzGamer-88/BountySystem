@@ -26,3 +26,8 @@ Command | Permission | Description
 Permission | Description
 -----------|------------
 bountysystem.bypass | Bounties can't be placed on people with this permission.
+
+### Placeholders:
+Placeholder | Description
+------------|------------
+%placeholder% | description

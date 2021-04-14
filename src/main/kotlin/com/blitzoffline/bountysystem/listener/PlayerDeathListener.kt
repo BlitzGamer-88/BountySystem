@@ -1,13 +1,13 @@
 package com.blitzoffline.bountysystem.listener
 
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
-import com.blitzoffline.bountysystem.runnable.minId
 import com.blitzoffline.bountysystem.util.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
