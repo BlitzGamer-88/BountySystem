@@ -10,8 +10,5 @@ fun Location.isInCorrectWorldGuardRegion() : Boolean {
     val weLocation = BukkitAdapter.adapt(this)
     val container = WorldGuard.getInstance().platform.regionContainer
 
-    container.createQuery().getApplicableRegions(weLocation).forEach {
-        if (settings[Settings.REGIONS_LIST].contains(it.id)) return true
-    }
-    return false
+    return container.createQuery().getApplicableRegions(weLocation).map { it.id }.containsAnyIgnoreCase(settings[Settings.REGIONS_LIST])
 }

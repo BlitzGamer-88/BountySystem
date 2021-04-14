@@ -1,6 +1,7 @@
 package com.blitzoffline.bountysystem.runnable
 
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
@@ -10,8 +11,6 @@ import com.blitzoffline.bountysystem.util.msg
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
-
-const val minId: Short = 1000
 
 class BountyExpire : BukkitRunnable() {
     override fun run() {

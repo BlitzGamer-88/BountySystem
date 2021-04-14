@@ -1,7 +1,6 @@
 package com.blitzoffline.bountysystem.bounty
 
-import com.blitzoffline.bountysystem.runnable.minId
-
+const val minId: Short = 1000
 val BOUNTIES_LIST = mutableMapOf<String, Bounty>()
 
 fun getRandomId(): Short {

@@ -1,10 +1,10 @@
 package com.blitzoffline.bountysystem.util
 
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.settings
-import com.blitzoffline.bountysystem.runnable.minId
 import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
 import org.bukkit.Bukkit
