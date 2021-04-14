@@ -21,14 +21,33 @@ class PlayerDeathListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerDeath (event: PlayerDeathEvent) {
         val killed = event.entity
+        /*
+            If the death cause is not a player then we can stop
+        */
         val killer = killed.killer ?: return
 
+        /*
+            If the kill did not happen in one of the allowed regions or worlds we can stop
+        */
+        if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].contains(killer.world.name) && !settings[Settings.WORLDS_LIST].contains(killer.world.uid.toString())) return
+        if (settings[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion()) return
+
+        /*
+            We loop through the existing bounties to see if maybe one of them was completed
+        */
         for (bounty in BOUNTIES_LIST.values) {
+            /*
+                We skip bounties with bad IDs
+            */
             if (bounty.id < minId) continue
+            /*
+                We skip bounties which were not placed on the person that died
+            */
             if (UUID.fromString(bounty.target) != killed.uniqueId) continue
+            /*
+                We skip bounties that were placed by the killer
+            */
             if (UUID.fromString(bounty.payer) == killer.uniqueId) continue
-            if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].contains(killer.world.name)) return
-            if (settings[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion(settings[Settings.WORLDS_LIST])) return
 
             val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
             econ.depositPlayer(killer, finalAmount.toDouble())
