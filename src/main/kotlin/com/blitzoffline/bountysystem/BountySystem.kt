@@ -61,17 +61,17 @@ class BountySystem : JavaPlugin() {
         )
 
         registerTasks()
-        database.load()
+        database.loadBounties()
         "[BountySystem] Plugin enabled successfully!".log()
     }
 
     override fun onDisable() {
-        database.save()
+        database.saveBounties()
         "[BountySystem] Plugin disabled successfully!".log()
     }
 
     fun reload() {
-        database.save()
+        database.saveBounties()
         settings.reload()
         messages.reload()
         registerTasks()
