@@ -1,4 +1,4 @@
-package com.blitzoffline.bountysystem.runnable
+package com.blitzoffline.bountysystem.task
 
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.minId
@@ -8,25 +8,20 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.util.msg
-import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
 
 class BountyExpire : BukkitRunnable() {
     override fun run() {
-        val currentTimeInSeconds = System.currentTimeMillis() / 1000
         for (bounty in BOUNTIES_LIST.values) {
-            val bountyId = bounty.id
-            if (bountyId < minId) continue
-            if (currentTimeInSeconds - bounty.placedTime < settings[Bounties.EXPIRY_TIME]) continue
+            if (bounty.id < minId) continue
+            if (System.currentTimeMillis() - bounty.placedTime < settings[Bounties.EXPIRY_TIME] * 1000) continue
 
-            val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
-            econ.depositPlayer(payerOfflinePlayer, bounty.amount.toDouble())
-            BOUNTIES_LIST.remove(bountyId.toString())
+            econ.depositPlayer(bounty.payer(), bounty.amount.toDouble())
+            BOUNTIES_LIST.remove("${bounty.id}")
 
-            payerOfflinePlayer.player?.let {
+            bounty.payer().player?.let {
                 messages[Messages.BOUNTY_EXPIRED]
-                    .replace("%bountyId%", bountyId.toString())
+                    .replace("%bountyId%", "${bounty.id}")
                     .msg(it)
             }
         }

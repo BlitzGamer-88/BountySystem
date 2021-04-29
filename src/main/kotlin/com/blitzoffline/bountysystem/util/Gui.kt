@@ -7,9 +7,7 @@ import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.settings
 import me.mattstudios.mfgui.gui.components.ItemBuilder
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
-import org.bukkit.Bukkit
 import org.bukkit.Material
-import java.util.*
 
 fun createGUI(): PaginatedGui {
     val bountyGui = PaginatedGui(6, 45, settings[Menu.TITLE].color())
@@ -58,13 +56,11 @@ fun PaginatedGui.placeItems() {
 
         val bounty = entry.value
 
-        val targetOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.target))
-        val payerOfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(bounty.payer))
 
-        val payerName = payerOfflinePlayer.name ?: continue
+        val payerName = bounty.payer().name ?: continue
         val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
-        val currentTime = System.currentTimeMillis() / 1000
-        val expiryTime = formatTime(settings[Bounties.EXPIRY_TIME] - (currentTime - bounty.placedTime))
+        val currTime = System.currentTimeMillis()
+        val expiryTime = formatTime(settings[Bounties.EXPIRY_TIME] * 1000 - (currTime - bounty.placedTime))
 
         paginatedGui.addItem(
             ItemBuilder
@@ -75,7 +71,7 @@ fun PaginatedGui.placeItems() {
                         .replace("%bountyId%", id.toString())
                         .replace("%expiryTime%", expiryTime)
                         .replace("%payer%", payerName)
-                        .parsePAPI(targetOfflinePlayer)
+                        .parsePAPI(bounty.target())
                         .color()
                     }
                 )
@@ -85,10 +81,10 @@ fun PaginatedGui.placeItems() {
                         .replace("%bountyId%", id.toString())
                         .replace("%expiryTime%", expiryTime)
                         .replace("%payer%", payerName)
-                        .parsePAPI(targetOfflinePlayer)
+                        .parsePAPI(bounty.target())
                         .color()
                 )
-                .setSkullOwner(targetOfflinePlayer)
+                .setSkullOwner(bounty.target())
                 .asGuiItem()
         )
     }

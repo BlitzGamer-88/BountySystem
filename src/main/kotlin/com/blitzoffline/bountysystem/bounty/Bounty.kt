@@ -1,3 +1,16 @@
 package com.blitzoffline.bountysystem.bounty
 
-class Bounty(var id: Short, var payer: String, var target: String, var amount: Int, var placedTime: Long)
+import java.util.UUID
+import org.bukkit.Bukkit
+
+class Bounty(
+    var id: Short,
+    var payer: UUID,
+    var target: UUID,
+    var amount: Int,
+    var placedTime: Long
+    )
+{
+    fun payer() = Bukkit.getOfflinePlayer(payer)
+    fun target() = Bukkit.getOfflinePlayer(target)
+}

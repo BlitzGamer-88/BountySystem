@@ -8,12 +8,15 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
-import com.blitzoffline.bountysystem.util.*
+import com.blitzoffline.bountysystem.util.broadcast
+import com.blitzoffline.bountysystem.util.containsIgnoreCase
+import com.blitzoffline.bountysystem.util.isInCorrectWorldGuardRegion
+import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.parsePAPI
+import java.text.DecimalFormat
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
-import java.text.DecimalFormat
-import java.util.*
 
 class PlayerDeathListener : Listener {
     @EventHandler(ignoreCancelled = true)
@@ -26,8 +29,8 @@ class PlayerDeathListener : Listener {
 
         for (bounty in BOUNTIES_LIST.values) {
             if (bounty.id < minId) continue
-            if (UUID.fromString(bounty.target) != killed.uniqueId) continue
-            if (UUID.fromString(bounty.payer) == killer.uniqueId) continue
+            if (bounty.target != killed.uniqueId) continue
+            if (bounty.payer == killer.uniqueId) continue
 
             val formatter = DecimalFormat("#.##")
 

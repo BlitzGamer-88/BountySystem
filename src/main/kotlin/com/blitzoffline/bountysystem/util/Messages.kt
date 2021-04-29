@@ -1,7 +1,6 @@
 package com.blitzoffline.bountysystem.util
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
-import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

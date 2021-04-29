@@ -19,5 +19,4 @@ class BountyPlaceholders(private val plugin: BountySystem) : PlaceholderExpansio
         // TODO: Add placeholders
         return null
     }
-
 }
