@@ -32,6 +32,12 @@ class BountySystem : JavaPlugin() {
     lateinit var database: Database
 
     override fun onEnable() {
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig")
+        } catch (ignored: ClassNotFoundException) {
+            "&cTHIS PLUGIN SHOULD BE USED ON PAPER: papermc.io/download".log()
+        }
+
         loadConfig(this)
         loadMessages(this)
 

@@ -8,6 +8,8 @@
 * Hex support (&#aaFF00).
 * 99% Customizable.
 
+! This plugin should be used on [PaperSpigot](https://papermc.io/downloads)
+
 ### User Commands:
 Command | Permission | Description
 --------|------------|------------
