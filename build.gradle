@@ -35,8 +35,6 @@ dependencies {
     // MF CONFIG
     implementation 'me.mattstudios:triumph-config:1.0.5-SNAPSHOT'
     // ADVENTURE
-    implementation 'net.kyori:adventure-text-serializer-legacy:4.7.0'
-    // PLATFORMS
     implementation 'net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT'
 
     // PLACEHOLDERAPI
@@ -54,6 +52,12 @@ shadowJar {
     relocate 'kotlin', 'com.blitzoffline.bountysystem.libs.kotlin'
     relocate 'me.mattstudios.mf', 'com.blitzoffline.bountysystem.libs.mf'
     relocate 'me.mattstudios.mfgui', 'com.blitzoffline.bountysystem.libs.mfgui'
+    relocate 'me.mattstudios.config', 'com.blitzoffline.bountysystem.libs.mfconf'
+    relocate 'net.kyori', 'com.blitzoffline.bountysystem.libs.adventure'
+    relocate 'org.intellij', 'com.blitzoffline.bountysystem.libs.jetbrains'
+    relocate 'org.jetbrains', 'com.blitzoffline.bountysystem.libs.jetbrains'
+    relocate 'org.yaml.snakeyaml', 'com.blitzoffline.bountysystem.libs.yaml'
+    relocate 'com.google', 'com.blitzoffline.bountysystem.libs.gson'
     archiveFileName.set("BountySystem-${project.version}.jar")
 }
 
