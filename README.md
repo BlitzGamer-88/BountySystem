@@ -31,4 +31,7 @@ bountysystem.bypass | Bounties can't be placed on people with this permission.
 ### Placeholders:
 Placeholder | Description
 ------------|------------
-%placeholder% | description
+%bountysystem_target_<id>% | Provides the name of the person the bounty is placed on.
+%bountysystem_payer_<id>% | Provides the name of the person that placed the bounty.
+%bountysystem_amount_<id>% | Provides the amount the payer placed on the target's head.
+%bountysystem_ids_<player>% | Provides a list of IDs for every bounty this player has placed.
