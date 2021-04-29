@@ -4,9 +4,9 @@
 ### Features:
 * [PlaceholderAPI](https://www.spigotmc.org/resources/6245/) support.
 * [WorldGuard](https://dev.bukkit.org/projects/worldguard/) support.
-* Lots of placeholders. soon™️
 * Hex support (&#aaFF00).
 * 99% Customizable.
+* Placeholders.
 
 ! This plugin should be used on [PaperSpigot](https://papermc.io/downloads)
 
