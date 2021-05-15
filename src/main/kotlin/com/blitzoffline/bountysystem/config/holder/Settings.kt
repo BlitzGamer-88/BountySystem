@@ -19,4 +19,7 @@ object Settings : SettingsHolder {
     val INTERVAL_EXPIRY = Property.create(300)
     @Path("intervals.cache")
     val INTERVAL_CACHE = Property.create(300)
+
+    @Path("debug")
+    val DEBUG = Property.create(false)
 }

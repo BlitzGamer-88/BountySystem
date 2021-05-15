@@ -14,7 +14,6 @@ class BountyExpire : BukkitRunnable() {
     // TODO: Rewrite the way bounties expire.
     // Make a new schedule for each bounty when the server start using #runTaskLater()
     // Calculate when the task should be ran from the place time and the expiry time (from config)
-    // STOP task in PlayerDeathListener in case it expires
     override fun run() {
         for (bounty in BOUNTIES_LIST.values) {
             if (bounty.id < minId) continue

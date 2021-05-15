@@ -18,7 +18,7 @@ fun createGUI(): PaginatedGui {
     resulting in the items duplicating each 20 Ticks instead of updating the old ones.
 
     var task: BukkitTask? = null
-    bountyGui.setOpenGuiAction { task = plugin.server.scheduler.runTaskTimer(plugin, Runnable { bountyGui.placeItems(); bountyGui.update() }, 20L, 20L) }
+    bountyGui.setOpenGuiAction { task = plugin.server.scheduler.runTaskTimer(plugin, Runnable { bountyGui.clearItems(); bountyGui.placeItems(); bountyGui.update() }, 20L, 20L) }
     bountyGui.setCloseGuiAction { if (task != null && !task!!.isCancelled) task!!.cancel(); task = null }
      */
     return bountyGui
@@ -56,11 +56,10 @@ fun PaginatedGui.placeItems() {
 
         val bounty = entry.value
 
-
         val payerName = bounty.payer().name ?: continue
         val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
         val currTime = System.currentTimeMillis()
-        val expiryTime = formatTime(settings[Bounties.EXPIRY_TIME] * 1000 - (currTime - bounty.placedTime))
+        val expiryTime = (settings[Bounties.EXPIRY_TIME] - (currTime - bounty.placedTime) / 1000).format()
 
         paginatedGui.addItem(
             ItemBuilder

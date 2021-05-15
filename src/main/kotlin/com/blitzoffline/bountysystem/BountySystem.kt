@@ -2,6 +2,7 @@ package com.blitzoffline.bountysystem
 
 import com.blitzoffline.bountysystem.command.CommandBountySystem
 import com.blitzoffline.bountysystem.command.CommandBountySystemAdmin
+import com.blitzoffline.bountysystem.command.CommandRespawnPlayer
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import com.blitzoffline.bountysystem.config.loadConfig
@@ -60,6 +61,8 @@ class BountySystem : JavaPlugin() {
             register("#amount") { listOf("<amount>") }
         }
         with (commandManager) {
+            // TODO: Remove this registration when publishing
+            register (CommandRespawnPlayer())
             register(CommandBountySystem())
             register(CommandBountySystemAdmin(this@BountySystem))
         }

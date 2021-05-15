@@ -53,11 +53,8 @@ shadowJar {
     relocate 'me.mattstudios.mf', 'com.blitzoffline.bountysystem.libs.mf'
     relocate 'me.mattstudios.mfgui', 'com.blitzoffline.bountysystem.libs.mfgui'
     relocate 'me.mattstudios.config', 'com.blitzoffline.bountysystem.libs.mfconf'
-    relocate 'net.kyori', 'com.blitzoffline.bountysystem.libs.adventure'
-    relocate 'org.intellij', 'com.blitzoffline.bountysystem.libs.jetbrains'
-    relocate 'org.jetbrains', 'com.blitzoffline.bountysystem.libs.jetbrains'
-    relocate 'org.yaml.snakeyaml', 'com.blitzoffline.bountysystem.libs.yaml'
-    relocate 'com.google', 'com.blitzoffline.bountysystem.libs.gson'
+    relocate 'net.kyori', 'com.blitzoffline.bountysystem.libs.kyori'
+    relocate 'com.google.gson', 'com.blitzoffline.bountysystem.libs.gson'
     archiveFileName.set("BountySystem-${project.version}.jar")
 }
 

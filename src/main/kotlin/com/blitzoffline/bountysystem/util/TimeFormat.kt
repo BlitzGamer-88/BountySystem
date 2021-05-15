@@ -3,7 +3,9 @@ package com.blitzoffline.bountysystem.util
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.messages
 
-fun formatTime(totalSeconds: Long) : String {
+fun Long.format() : String {
+    val totalSeconds = this
+
     val totalMinutes = totalSeconds/60
     val totalHours = totalMinutes/60
 

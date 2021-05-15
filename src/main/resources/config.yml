@@ -52,3 +52,6 @@ menu:
         - '&eBounty: &6%amount%$'
         - '&eID: &6%bountyId%'
         - '&eExpires in: &6%expiryTime%'
+
+# If this option is enabled, debug messages will be sent in console.
+debug: false
