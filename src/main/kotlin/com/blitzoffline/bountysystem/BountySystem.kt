@@ -3,7 +3,7 @@ package com.blitzoffline.bountysystem
 import com.blitzoffline.bountysystem.command.CommandAdminCancel
 import com.blitzoffline.bountysystem.command.CommandAdminReload
 import com.blitzoffline.bountysystem.command.CommandBounty
-import com.blitzoffline.bountysystem.command.CommandBountyAdd
+import com.blitzoffline.bountysystem.command.CommandBountyIncrease
 import com.blitzoffline.bountysystem.command.CommandBountyCancel
 import com.blitzoffline.bountysystem.command.CommandBountyHelp
 import com.blitzoffline.bountysystem.command.CommandBountyPlace
@@ -66,7 +66,7 @@ class BountySystem : JavaPlugin() {
         with (commandManager) {
             register(
                 CommandBounty(),
-                CommandBountyAdd(),
+                CommandBountyIncrease(),
                 CommandBountyCancel(),
                 CommandBountyHelp(),
                 CommandBountyPlace(),

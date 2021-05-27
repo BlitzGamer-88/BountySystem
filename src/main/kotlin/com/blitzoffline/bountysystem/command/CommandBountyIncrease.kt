@@ -14,13 +14,12 @@ import me.mattstudios.mf.annotations.SubCommand
 import me.mattstudios.mf.base.CommandBase
 import org.bukkit.entity.Player
 
-// todo: rename to "increase"
 @Command("bounty")
-class CommandBountyAdd : CommandBase() {
+class CommandBountyIncrease : CommandBase() {
 
-    @SubCommand("add")
-    @Permission("bountysystem.add")
-    fun add(sender: Player, @Completion("#id") bountyId: String, @Completion("#amount") amount: String) {
+    @SubCommand("increase")
+    @Permission("bountysystem.increase")
+    fun increase(sender: Player, @Completion("#id") bountyId: String, @Completion("#amount") amount: String) {
         if (bountyId.toIntOrNull() == null || amount.toIntOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
