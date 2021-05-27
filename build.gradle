@@ -31,7 +31,8 @@ dependencies {
     // MF COMMANDS
     implementation 'me.mattstudios.utils:matt-framework:1.4.6'
     // MF GUIS
-    implementation 'me.mattstudios:triumph-gui:3.0.5-SNAPSHOT'
+//    implementation 'me.mattstudios:triumph-gui:3.0.5-SNAPSHOT'
+    implementation 'dev.triumphteam:triumph-gui:3.0.0-SNAPSHOT'
     // MF CONFIG
     implementation 'me.mattstudios:triumph-config:1.0.5-SNAPSHOT'
     // ADVENTURE

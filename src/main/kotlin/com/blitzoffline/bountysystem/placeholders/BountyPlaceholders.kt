@@ -6,7 +6,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.OfflinePlayer
 
 class BountyPlaceholders(private val plugin: BountySystem) : PlaceholderExpansion() {
-    override fun getIdentifier() = plugin.description.name.toLowerCase()
+    override fun getIdentifier() = plugin.description.name.lowercase()
 
     override fun getAuthor() = plugin.description.authors[0] ?: "BlitzOffline"
 
@@ -20,21 +20,25 @@ class BountyPlaceholders(private val plugin: BountySystem) : PlaceholderExpansio
         if (params.split("_").size != 2) return null
 
         when {
+
             params.startsWith("target_", true) -> {
                 val id = params.substringAfter("target_")
                 val bounty = BOUNTIES_LIST[id] ?: return ""
                 return bounty.target().name ?: ""
             }
+
             params.startsWith("payer_", true) -> {
                 val id = params.substringAfter("payer_")
                 val bounty = BOUNTIES_LIST[id] ?: return ""
                 return bounty.payer().name ?: ""
             }
+
             params.startsWith("amount_", true) -> {
                 val id = params.substringAfter("amount_")
                 val bounty = BOUNTIES_LIST[id] ?: return ""
                 return bounty.amount.toString()
             }
+
             params.startsWith("ids_", true) -> {
                 val p = plugin.server.getOfflinePlayerIfCached(params.substringAfter("ids_")) ?: return ""
                 val ids = mutableListOf<String>()
@@ -45,6 +49,7 @@ class BountyPlaceholders(private val plugin: BountySystem) : PlaceholderExpansio
                 if (ids.isEmpty()) return ""
                 return ids.joinToString(", ")
             }
+
         }
         return null
     }

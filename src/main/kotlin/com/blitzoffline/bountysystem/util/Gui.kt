@@ -5,12 +5,13 @@ import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.settings
-import me.mattstudios.gui.components.util.ItemBuilder
-import me.mattstudios.gui.guis.PaginatedGui
+import dev.triumphteam.gui.builder.item.ItemBuilder
+import dev.triumphteam.gui.guis.PaginatedGui
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 
 fun createGUI(): PaginatedGui {
-    val bountyGui = PaginatedGui(6, 45, settings[Menu.TITLE].color())
+    val bountyGui = PaginatedGui(6, 45, Component.text(settings[Menu.TITLE]))
     bountyGui.setDefaultClickAction { it.isCancelled = true; }
     bountyGui.placeItems()
     /*
@@ -29,25 +30,26 @@ fun PaginatedGui.placeItems() {
     paginatedGui.filler.fillBottom(
         ItemBuilder
             .from(Material.valueOf(settings[Menu.FILLER_MATERIAL].uppercase()))
-            .setName(settings[Menu.FILLER_NAME].color())
-            .setLore(settings[Menu.FILLER_LORE].color())
+            .name(Component.text(settings[Menu.FILLER_NAME]))
+            .lore(settings[Menu.FILLER_LORE].map { Component.text(it) })
             .asGuiItem()
     )
     paginatedGui.setItem(
         47,
         ItemBuilder
             .from(Material.valueOf(settings[Menu.PREVIOUS_PAGE_MATERIAL].uppercase()))
-            .setName(settings[Menu.PREVIOUS_PAGE_NAME].color())
-            .setLore(settings[Menu.PREVIOUS_PAGE_LORE].color())
+            .name(Component.text(settings[Menu.PREVIOUS_PAGE_NAME]))
+            .lore(settings[Menu.PREVIOUS_PAGE_LORE].map { Component.text(it) })
             .asGuiItem { paginatedGui.previous() }
     )
     paginatedGui.setItem(
         51,
         ItemBuilder
             .from(Material.valueOf(settings[Menu.NEXT_PAGE_MATERIAL].uppercase()))
-            .setName(settings[Menu.NEXT_PAGE_NAME].color())
-            .setLore(settings[Menu.NEXT_PAGE_LORE].color())
+            .name(Component.text(settings[Menu.NEXT_PAGE_NAME]))
+            .lore(settings[Menu.NEXT_PAGE_LORE].map { Component.text(it) })
             .asGuiItem { paginatedGui.next() }
+
     )
 
     for (entry in BOUNTIES_LIST) {
@@ -63,27 +65,29 @@ fun PaginatedGui.placeItems() {
 
         paginatedGui.addItem(
             ItemBuilder
-                .from(Material.PLAYER_HEAD)
-                .setLore(
-                    settings[Menu.BOUNTY_LORE].map { it
-                        .replace("%amount%", finalAmount.toString())
-                        .replace("%bountyId%", id.toString())
-                        .replace("%expiryTime%", expiryTime)
-                        .replace("%payer%", payerName)
-                        .parsePAPI(bounty.target())
-                        .color()
+                .skull()
+                .name(
+                    Component.text(
+                        settings[Menu.BOUNTY_NAME]
+                            .replace("%amount%", finalAmount.toString())
+                            .replace("%bountyId%", id.toString())
+                            .replace("%expiryTime%", expiryTime)
+                            .replace("%payer%", payerName)
+                            .parsePAPI(bounty.target())
+                    )
+                )
+                .lore(
+                    settings[Menu.BOUNTY_LORE].map {
+                        Component.text( it
+                            .replace("%amount%", finalAmount.toString())
+                            .replace("%bountyId%", id.toString())
+                            .replace("%expiryTime%", expiryTime)
+                            .replace("%payer%", payerName)
+                            .parsePAPI(bounty.target())
+                        )
                     }
                 )
-                .setName(
-                    settings[Menu.BOUNTY_NAME]
-                        .replace("%amount%", finalAmount.toString())
-                        .replace("%bountyId%", id.toString())
-                        .replace("%expiryTime%", expiryTime)
-                        .replace("%payer%", payerName)
-                        .parsePAPI(bounty.target())
-                        .color()
-                )
-                .setSkullOwner(bounty.target())
+                .owner(bounty.target())
                 .asGuiItem()
         )
     }
