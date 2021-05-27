@@ -1,8 +1,6 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 group 'com.blitzoffline'
@@ -10,7 +8,7 @@ version '1.4'
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
+        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [version: version]
     }
 }
 
@@ -31,7 +29,7 @@ dependencies {
     // MF COMMANDS
     implementation 'me.mattstudios.utils:matt-framework:1.4.6'
     // MF GUIS
-    implementation 'me.mattstudios.utils:matt-framework-gui:2.0.3'
+    implementation 'me.mattstudios.utils:triumph-gui:3.0.5'
     // MF CONFIG
     implementation 'me.mattstudios:triumph-config:1.0.5-SNAPSHOT'
     // ADVENTURE

@@ -13,7 +13,6 @@ import org.bukkit.Bukkit
 lateinit var settings: SettingsManager
 lateinit var messages: SettingsManager
 lateinit var econ: Economy
-lateinit var perms: Permission
 
 fun loadConfig(plugin: BountySystem) {
     val file = plugin.dataFolder.resolve("config.yml")
@@ -37,11 +36,5 @@ fun setupEconomy(): Boolean {
     if (Bukkit.getServer().pluginManager.getPlugin("Vault") == null) return false
     val rsp = Bukkit.getServer().servicesManager.getRegistration(Economy::class.java) ?: return false
     econ = rsp.provider
-    return true
-}
-
-fun setupPermissions(): Boolean {
-    val rsp = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java) ?: return false
-    perms = rsp.provider
     return true
 }

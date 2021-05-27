@@ -1,8 +1,12 @@
 package com.blitzoffline.bountysystem
 
-import com.blitzoffline.bountysystem.command.CommandBountySystem
-import com.blitzoffline.bountysystem.command.CommandBountySystemAdmin
-import com.blitzoffline.bountysystem.command.CommandRespawnPlayer
+import com.blitzoffline.bountysystem.command.CommandAdminCancel
+import com.blitzoffline.bountysystem.command.CommandAdminReload
+import com.blitzoffline.bountysystem.command.CommandBounty
+import com.blitzoffline.bountysystem.command.CommandBountyAdd
+import com.blitzoffline.bountysystem.command.CommandBountyCancel
+import com.blitzoffline.bountysystem.command.CommandBountyHelp
+import com.blitzoffline.bountysystem.command.CommandBountyPlace
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import com.blitzoffline.bountysystem.config.loadConfig
@@ -10,7 +14,6 @@ import com.blitzoffline.bountysystem.config.loadMessages
 import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.config.setupEconomy
-import com.blitzoffline.bountysystem.config.setupPermissions
 import com.blitzoffline.bountysystem.database.Database
 import com.blitzoffline.bountysystem.listener.PlayerDeathListener
 import com.blitzoffline.bountysystem.placeholders.BountyPlaceholders
@@ -61,10 +64,15 @@ class BountySystem : JavaPlugin() {
             register("#amount") { listOf("<amount>") }
         }
         with (commandManager) {
-            // TODO: Remove this registration when publishing
-            register (CommandRespawnPlayer())
-            register(CommandBountySystem())
-            register(CommandBountySystemAdmin(this@BountySystem))
+            register(
+                CommandBounty(),
+                CommandBountyAdd(),
+                CommandBountyCancel(),
+                CommandBountyHelp(),
+                CommandBountyPlace(),
+                CommandAdminCancel(),
+                CommandAdminReload(this@BountySystem)
+            )
         }
 
         registerTasks()
@@ -101,10 +109,6 @@ class BountySystem : JavaPlugin() {
             return false
         }
         if (!setupEconomy()) {
-            "[BountySystem] Could not find Vault! This plugin is required".log()
-            return false
-        }
-        if (!setupPermissions()) {
             "[BountySystem] Could not find Vault! This plugin is required".log()
             return false
         }
