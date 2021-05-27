@@ -10,7 +10,6 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.util.broadcast
-import com.blitzoffline.bountysystem.util.debug
 import com.blitzoffline.bountysystem.util.msg
 import com.blitzoffline.bountysystem.util.parsePAPI
 import me.mattstudios.mf.annotations.Command

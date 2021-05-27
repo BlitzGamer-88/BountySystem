@@ -3,9 +3,9 @@ package com.blitzoffline.bountysystem
 import com.blitzoffline.bountysystem.command.CommandAdminCancel
 import com.blitzoffline.bountysystem.command.CommandAdminReload
 import com.blitzoffline.bountysystem.command.CommandBounty
-import com.blitzoffline.bountysystem.command.CommandBountyIncrease
 import com.blitzoffline.bountysystem.command.CommandBountyCancel
 import com.blitzoffline.bountysystem.command.CommandBountyHelp
+import com.blitzoffline.bountysystem.command.CommandBountyIncrease
 import com.blitzoffline.bountysystem.command.CommandBountyPlace
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings

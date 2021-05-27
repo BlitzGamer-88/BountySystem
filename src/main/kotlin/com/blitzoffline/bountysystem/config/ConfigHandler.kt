@@ -7,7 +7,6 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
 import me.mattstudios.config.SettingsManager
 import net.milkbowl.vault.economy.Economy
-import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 
 lateinit var settings: SettingsManager

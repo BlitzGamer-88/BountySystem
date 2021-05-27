@@ -15,15 +15,14 @@ Command | Permission | Description
 --------|------------|------------
 /bounty | bountysystem.open | Open a menu in which all existing bounties will be listed.
 /bounty place \<target> \<amount> | bountysystem.place | Place a bounty on someone.
-/bounty add \<bountyID> \<amount> | bountysystem.add | Increase the reward for one of the bounties you placed.
+/bounty increase \<bountyID> \<amount> | bountysystem.increase | Increase the reward for one of the bounties you placed.
 /bounty cancel \<bountyID> | bountysystem.cancel | Cancel a bounty that you've placed.
 
 ### Admin Commands:
 Command | Permission | Description
 --------|------------|------------
-/bountyadmin cancel \<bountyID> | bountysystem.admin.cancel | Cancel bounties placed by other users.
-/bountyadmin bypass \<player> | bountysystem.admin.bypass | Give someone the bountysystem.bypass permission.
-/bountyadmin reload | bountysystem.admin.reload | Reload the plugin configuration.
+/bountyadmin cancel \<bountyID> | bountysystem.admin | Cancel bounties placed by other users.
+/bountyadmin reload | bountysystem.admin | Reload the plugin configuration.
 
 ### Permissions:
 Permission | Description
