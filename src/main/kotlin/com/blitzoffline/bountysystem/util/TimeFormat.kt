@@ -14,5 +14,8 @@ fun Long.format() : String {
     val minutes = totalMinutes%60
     val seconds = totalSeconds%60
 
-    return days.toString() + messages[Messages.TIME_DAYS] + hours.toString() + messages[Messages.TIME_HOURS] + minutes.toString() + messages[Messages.TIME_MINUTES] + seconds.toString() + messages[Messages.TIME_SECONDS]
+    return  days.toString()    + messages[Messages.TIME_DAYS]    +
+            hours.toString()   + messages[Messages.TIME_HOURS]   +
+            minutes.toString() + messages[Messages.TIME_MINUTES] +
+            seconds.toString() + messages[Messages.TIME_SECONDS]
 }

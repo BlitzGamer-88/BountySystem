@@ -76,12 +76,12 @@ class BountySystem : JavaPlugin() {
         }
 
         registerTasks()
-        database.loadBounties()
+        database.load()
         "[BountySystem] Plugin enabled successfully!".log()
     }
 
     override fun onDisable() {
-        database.saveBounties()
+        database.save()
         "[BountySystem] Plugin disabled successfully!".log()
     }
 
@@ -90,7 +90,7 @@ class BountySystem : JavaPlugin() {
         if(::updateBounties.isInitialized && !updateBounties.isCancelled) updateBounties.cancel()
 
         saveData = SaveDataTask(this).runTaskTimer(this, settings[Settings.INTERVAL_CACHE] * 20L, settings[Settings.INTERVAL_CACHE] * 20L)
-        updateBounties = BountyExpire().runTaskTimer(this, settings[Settings.INTERVAL_EXPIRY] * 20L, settings[Settings.INTERVAL_EXPIRY] * 20L)
+        updateBounties = BountyExpire().runTaskTimerAsynchronously(this, settings[Settings.INTERVAL_EXPIRY] * 20L, settings[Settings.INTERVAL_EXPIRY] * 20L)
     }
 
     private fun setupHooks(): Boolean {

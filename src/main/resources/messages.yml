@@ -1,4 +1,3 @@
-PLAYER-NOT-FOUND: '&7Could not find player. Make sure the player is online and you''ve typed the correct name.'
 NOT-YOUR-BOUNTY: '&7Bounty with id &c%bountyId%&7 was not placed by you.'
 BOUNTY-NOT-FOUND: '&7Could not find bounty with id &c%bountyId%&7.'
 CONFIG-RELOADED: '&aConfig Reloaded.'

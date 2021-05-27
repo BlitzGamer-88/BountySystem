@@ -46,13 +46,9 @@ class CommandBountyPlace : CommandBase() {
             return
         }
 
-        var bountiesCounter = 0
-        for (bounty in BOUNTIES_LIST.values) {
-            if (bounty.id < minId) continue
-            if (sender.uniqueId == bounty.payer) bountiesCounter++
-        }
+        val counter = BOUNTIES_LIST.values.map { it.payer == sender.uniqueId }.size
 
-        if (bountiesCounter >= settings[Bounties.MAX_AMOUNT]) {
+        if (counter >= settings[Bounties.MAX_AMOUNT]) {
             messages[Messages.MAX_BOUNTIES].msg(sender)
             return
         }

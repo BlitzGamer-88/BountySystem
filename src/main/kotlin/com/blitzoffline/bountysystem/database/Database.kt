@@ -15,7 +15,7 @@ class Database(private val plugin: BountySystem) {
         .create()
     private var forceStopped = false
 
-    fun loadBounties() {
+    fun load() {
         var count = 0
         try {
             "[BountySystem] Loading bounties...".log()
@@ -43,7 +43,7 @@ class Database(private val plugin: BountySystem) {
         }
     }
 
-    fun saveBounties() {
+    fun save() {
         try {
             if (forceStopped) return
             plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(BOUNTIES_LIST.values))

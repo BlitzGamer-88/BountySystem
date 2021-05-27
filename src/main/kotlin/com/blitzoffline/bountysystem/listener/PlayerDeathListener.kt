@@ -10,7 +10,7 @@ import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.util.broadcast
 import com.blitzoffline.bountysystem.util.containsIgnoreCase
-import com.blitzoffline.bountysystem.util.isInCorrectWorldGuardRegion
+import com.blitzoffline.bountysystem.util.inRegion
 import com.blitzoffline.bountysystem.util.msg
 import com.blitzoffline.bountysystem.util.parsePAPI
 import java.text.DecimalFormat
@@ -25,7 +25,7 @@ class PlayerDeathListener : Listener {
         val killer = entity.killer ?: return
 
         if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.name) && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.uid.toString())) return
-        if (settings[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion()) return
+        if (settings[Settings.REGIONS_USE] && !killer.location.inRegion()) return
 
         for (bounty in BOUNTIES_LIST.values) {
             if (bounty.id < minId) continue
@@ -36,16 +36,19 @@ class PlayerDeathListener : Listener {
 
             val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100.0) * bounty.amount)
             econ.depositPlayer(killer, finalAmount)
+
             BOUNTIES_LIST.remove(bounty.id.toString())
-            messages[Messages.BOUNTY_RECEIVED]
-                .replace("%amount%", formatter.format(finalAmount))
-                .replace("%target%", entity.name )
-                .msg(killer)
+
             messages[Messages.BOUNTY_RECEIVED_BROADCAST]
                 .replace("%amount%", formatter.format(finalAmount))
                 .replace("%target%", entity.name)
                 .parsePAPI(killer)
                 .broadcast()
+
+            messages[Messages.BOUNTY_RECEIVED]
+                .replace("%amount%", formatter.format(finalAmount))
+                .replace("%target%", entity.name )
+                .msg(killer)
         }
     }
 

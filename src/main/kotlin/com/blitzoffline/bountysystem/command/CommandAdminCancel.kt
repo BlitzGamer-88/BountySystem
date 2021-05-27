@@ -33,9 +33,14 @@ class CommandAdminCancel : CommandBase() {
         econ.depositPlayer(bounty.payer(), bounty.amount.toDouble())
         BOUNTIES_LIST.remove(bountyId)
 
-        messages[Messages.BOUNTY_CANCELED].replace("%bountyId%", bountyId).msg(sender)
+        messages[Messages.BOUNTY_CANCELED]
+            .replace("%bountyId%", bountyId)
+            .msg(sender)
+
         bounty.payer().player?.let {
-            messages[Messages.BOUNTY_CANCELED_ADMIN].replace("%bountyId%", bountyId).msg(it)
+            messages[Messages.BOUNTY_CANCELED_ADMIN]
+                .replace("%bountyId%", bountyId)
+                .msg(it)
         }
     }
 

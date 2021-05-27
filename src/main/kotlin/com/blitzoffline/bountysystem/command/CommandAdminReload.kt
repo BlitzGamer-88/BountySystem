@@ -18,8 +18,8 @@ class CommandAdminReload(private val plugin: BountySystem) : CommandBase() {
 
     @SubCommand("reload")
     @Permission("bountysystem.admin")
-    fun adminReload(sender: CommandSender) {
-        plugin.database.saveBounties()
+    fun reload(sender: CommandSender) {
+        plugin.database.save()
         settings.reload()
         messages.reload()
         messages[Messages.CONFIG_RELOADED].msg(sender)

@@ -6,7 +6,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard
 import org.bukkit.Location
 
-fun Location.isInCorrectWorldGuardRegion() : Boolean {
+fun Location.inRegion() : Boolean {
     val weLocation = BukkitAdapter.adapt(this)
     val container = WorldGuard.getInstance().platform.regionContainer
 
