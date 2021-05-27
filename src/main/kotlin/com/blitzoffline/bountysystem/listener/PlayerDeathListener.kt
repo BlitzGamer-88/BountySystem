@@ -19,17 +19,17 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 
 class PlayerDeathListener : Listener {
+
     @EventHandler(ignoreCancelled = true)
-    fun onPlayerDeath (event: PlayerDeathEvent) {
-        val killed = event.entity
-        val killer = killed.killer ?: return
+    fun PlayerDeathEvent.onDeath() {
+        val killer = entity.killer ?: return
 
         if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.name) && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.uid.toString())) return
         if (settings[Settings.REGIONS_USE] && !killer.location.isInCorrectWorldGuardRegion()) return
 
         for (bounty in BOUNTIES_LIST.values) {
             if (bounty.id < minId) continue
-            if (bounty.target != killed.uniqueId) continue
+            if (bounty.target != entity.uniqueId) continue
             if (bounty.payer == killer.uniqueId) continue
 
             val formatter = DecimalFormat("#.##")
@@ -39,13 +39,14 @@ class PlayerDeathListener : Listener {
             BOUNTIES_LIST.remove(bounty.id.toString())
             messages[Messages.BOUNTY_RECEIVED]
                 .replace("%amount%", formatter.format(finalAmount))
-                .replace("%target%", killed.name )
+                .replace("%target%", entity.name )
                 .msg(killer)
             messages[Messages.BOUNTY_RECEIVED_BROADCAST]
                 .replace("%amount%", formatter.format(finalAmount))
-                .replace("%target%", killed.name)
+                .replace("%target%", entity.name)
                 .parsePAPI(killer)
                 .broadcast()
         }
     }
+
 }

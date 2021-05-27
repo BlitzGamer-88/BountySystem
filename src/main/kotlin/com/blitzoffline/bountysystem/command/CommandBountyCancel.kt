@@ -28,7 +28,11 @@ class CommandBountyCancel : CommandBase() {
             return
         }
 
-        val bounty = BOUNTIES_LIST[bountyId] ?: return
+        val bounty = BOUNTIES_LIST[bountyId] ?: run {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
+            return
+        }
+
         if (sender.uniqueId != bounty.payer) {
             messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyId%", bountyId).msg(sender)
             return

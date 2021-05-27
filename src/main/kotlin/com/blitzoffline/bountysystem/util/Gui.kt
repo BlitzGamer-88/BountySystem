@@ -5,8 +5,8 @@ import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.settings
-import me.mattstudios.mfgui.gui.components.ItemBuilder
-import me.mattstudios.mfgui.gui.guis.PaginatedGui
+import me.mattstudios.gui.components.util.ItemBuilder
+import me.mattstudios.gui.guis.PaginatedGui
 import org.bukkit.Material
 
 fun createGUI(): PaginatedGui {
@@ -28,7 +28,7 @@ fun PaginatedGui.placeItems() {
     val paginatedGui = this
     paginatedGui.filler.fillBottom(
         ItemBuilder
-            .from(Material.valueOf(settings[Menu.FILLER_MATERIAL].toUpperCase()))
+            .from(Material.valueOf(settings[Menu.FILLER_MATERIAL].uppercase()))
             .setName(settings[Menu.FILLER_NAME].color())
             .setLore(settings[Menu.FILLER_LORE].color())
             .asGuiItem()
@@ -36,7 +36,7 @@ fun PaginatedGui.placeItems() {
     paginatedGui.setItem(
         47,
         ItemBuilder
-            .from(Material.valueOf(settings[Menu.PREVIOUS_PAGE_MATERIAL].toUpperCase()))
+            .from(Material.valueOf(settings[Menu.PREVIOUS_PAGE_MATERIAL].uppercase()))
             .setName(settings[Menu.PREVIOUS_PAGE_NAME].color())
             .setLore(settings[Menu.PREVIOUS_PAGE_LORE].color())
             .asGuiItem { paginatedGui.previous() }
@@ -44,7 +44,7 @@ fun PaginatedGui.placeItems() {
     paginatedGui.setItem(
         51,
         ItemBuilder
-            .from(Material.valueOf(settings[Menu.NEXT_PAGE_MATERIAL].toUpperCase()))
+            .from(Material.valueOf(settings[Menu.NEXT_PAGE_MATERIAL].uppercase()))
             .setName(settings[Menu.NEXT_PAGE_NAME].color())
             .setLore(settings[Menu.NEXT_PAGE_LORE].color())
             .asGuiItem { paginatedGui.next() }

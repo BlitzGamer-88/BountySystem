@@ -5,6 +5,7 @@ import me.mattstudios.config.annotations.Path
 import me.mattstudios.config.properties.Property
 
 object Settings : SettingsHolder {
+
     @Path("regions.use")
     val REGIONS_USE = Property.create(false)
     @Path("regions.list")
@@ -22,4 +23,5 @@ object Settings : SettingsHolder {
 
     @Path("debug")
     val DEBUG = Property.create(false)
+
 }

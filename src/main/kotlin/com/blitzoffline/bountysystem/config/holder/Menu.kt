@@ -35,4 +35,5 @@ object Menu : SettingsHolder {
     val BOUNTY_NAME = Property.create("&6Previous")
     @Path("menu.items.bounty.lore")
     val BOUNTY_LORE = Property.create(listOf<String>())
+
 }

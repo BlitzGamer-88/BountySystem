@@ -4,10 +4,7 @@ import me.mattstudios.config.SettingsHolder
 import me.mattstudios.config.annotations.Path
 import me.mattstudios.config.properties.Property
 
-
 object Messages : SettingsHolder {
-    @Path("PLAYER-NOT-FOUND")
-    val PLAYER_NOT_FOUND = Property.create("&7Could not find player. Make sure the player is online and you've typed the correct name.")
 
     @Path("NOT-YOUR-BOUNTY")
     val NOT_YOUR_BOUNTY = Property.create("&7Bounty with id &c%bountyId%&7 was not placed by you.")
@@ -74,4 +71,5 @@ object Messages : SettingsHolder {
     val TIME_MINUTES = Property.create("m ")
     @Path("TIME-FORMAT.seconds")
     val TIME_SECONDS = Property.create("s")
+
 }

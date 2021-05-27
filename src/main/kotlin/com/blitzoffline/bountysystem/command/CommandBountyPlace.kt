@@ -27,28 +27,23 @@ class CommandBountyPlace : CommandBase() {
     @Permission("bountysystem.place")
     fun place(sender: Player, @Completion("#players") target: Player, @Completion("#amount") amount: String) {
 
-        "&e[/bounty place] The command was initialised.".debug()
         if (amount.toIntOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
-            "&e[/bounty place] The command only accepts an integer as amount. PLACED: $amount".debug()
             return
         }
 
         if (target == sender) {
             messages[Messages.BOUNTY_ON_YOURSELF].msg(sender)
-            "&e[/bounty place] Placing a bounty on yourself is not allowed.".debug()
-            return
-        }
-
-        if (econ.getBalance(sender) < amount.toDouble()) {
-            messages[Messages.NOT_ENOUGH_MONEY].msg(sender)
-            "&e[/bounty place] Not enough money. GOT: ${econ.getBalance(sender)}, PLACED: ${amount.toInt()}".debug()
             return
         }
 
         if (target.hasPermission("bountysystem.bypass")) {
             messages[Messages.TARGET_WHITELISTED].msg(sender)
-            "&e[/bounty place] The target: ${target.uniqueId} has the bypass permission".debug()
+            return
+        }
+
+        if (econ.getBalance(sender) < amount.toDouble()) {
+            messages[Messages.NOT_ENOUGH_MONEY].msg(sender)
             return
         }
 
@@ -60,13 +55,11 @@ class CommandBountyPlace : CommandBase() {
 
         if (bountiesCounter >= settings[Bounties.MAX_AMOUNT]) {
             messages[Messages.MAX_BOUNTIES].msg(sender)
-            "&e[/bounty place] You have placed: $bountiesCounter bounties out of: ${settings[Bounties.MAX_AMOUNT]} allowed"
             return
         }
 
         val bountyId = getRandomId()
         if (bountyId == 0.toShort()) {
-            "&e[/bounty place] Could not find an empty ID for your bounty. This usually means that the maximum amount of 999000 bounties was reached.".debug()
             return
         }
 
@@ -92,7 +85,6 @@ class CommandBountyPlace : CommandBase() {
             .replace("%bountyId%", bountyId.toString())
             .parsePAPI(sender)
             .broadcast()
-        "&e[/bounty place] Bounty was successfully placed.".debug()
     }
 
 }

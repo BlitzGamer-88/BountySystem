@@ -85,12 +85,6 @@ class BountySystem : JavaPlugin() {
         "[BountySystem] Plugin disabled successfully!".log()
     }
 
-    fun reload() {
-        database.saveBounties()
-        settings.reload()
-        messages.reload()
-    }
-
     private fun registerTasks() {
         if(::saveData.isInitialized && !saveData.isCancelled) saveData.cancel()
         if(::updateBounties.isInitialized && !updateBounties.isCancelled) updateBounties.cancel()
