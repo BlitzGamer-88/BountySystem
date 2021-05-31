@@ -24,5 +24,4 @@ class CommandAdminReload(private val plugin: BountySystem) : CommandBase() {
         messages.reload()
         messages[Messages.CONFIG_RELOADED].msg(sender)
     }
-
 }

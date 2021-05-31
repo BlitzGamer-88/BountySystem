@@ -3,7 +3,6 @@ package com.blitzoffline.bountysystem.command
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.bounty.getRandomId
-import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.econ
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
@@ -46,38 +45,36 @@ class CommandBountyPlace : CommandBase() {
             return
         }
 
-        val counter = BOUNTIES_LIST.values.map { it.payer == sender.uniqueId }.size
-
-        if (counter >= settings[Bounties.MAX_AMOUNT]) {
+        if (BOUNTIES_LIST.filter { it.payer == sender.uniqueId }.size >= settings[Bounties.MAX_AMOUNT]) {
             messages[Messages.MAX_BOUNTIES].msg(sender)
             return
         }
 
-        val bountyId = getRandomId()
-        if (bountyId == 0.toShort()) {
+        val bountyID = getRandomId()
+        if (bountyID == 0.toShort()) {
             return
         }
 
         econ.withdrawPlayer(sender, amount.toDouble())
-        BOUNTIES_LIST[bountyId.toString()] = Bounty(
-            bountyId,
+        val bounty = Bounty(
+            bountyID,
             sender.uniqueId,
             target.uniqueId,
             amount.toInt(),
             System.currentTimeMillis()
         )
+        BOUNTIES_LIST.add(bounty)
 
-        val finalAmount = amount.toInt() - ((settings[Bounties.TAX] / 100) * amount.toInt())
         messages[Messages.BOUNTY_PLACED_SELF]
             .replace("%target%", target.name)
-            .replace("%amount%", finalAmount.toString())
-            .replace("%bountyId%", bountyId.toString())
+            .replace("%amount%", bounty.afterTax().toString())
+            .replace("%bountyId%", bountyID.toString())
             .msg(sender)
 
         messages[Messages.BOUNTY_PLACED_EVERYONE]
             .replace("%target%", target.name)
-            .replace("%amount%", finalAmount.toString())
-            .replace("%bountyId%", bountyId.toString())
+            .replace("%amount%", bounty.afterTax().toString())
+            .replace("%bountyId%", bountyID.toString())
             .parsePAPI(sender)
             .broadcast()
     }

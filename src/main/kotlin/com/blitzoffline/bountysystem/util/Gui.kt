@@ -1,7 +1,6 @@
 package com.blitzoffline.bountysystem.util
 
 import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
-import com.blitzoffline.bountysystem.bounty.minId
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Menu
 import com.blitzoffline.bountysystem.config.settings
@@ -52,11 +51,8 @@ fun PaginatedGui.placeItems() {
 
     )
 
-    for (entry in BOUNTIES_LIST) {
-        val id = entry.key.toIntOrNull() ?: continue
-        if (id < minId) continue
-
-        val bounty = entry.value
+    for (bounty in BOUNTIES_LIST) {
+        if (bounty.expired()) continue
 
         val payerName = bounty.payer().name ?: continue
         val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
@@ -70,7 +66,7 @@ fun PaginatedGui.placeItems() {
                     Component.text(
                         settings[Menu.BOUNTY_NAME]
                             .replace("%amount%", finalAmount.toString())
-                            .replace("%bountyId%", id.toString())
+                            .replace("%bountyId%", bounty.id.toString())
                             .replace("%expiryTime%", expiryTime)
                             .replace("%payer%", payerName)
                             .parsePAPI(bounty.target())
@@ -80,7 +76,7 @@ fun PaginatedGui.placeItems() {
                     settings[Menu.BOUNTY_LORE].map {
                         Component.text( it
                             .replace("%amount%", finalAmount.toString())
-                            .replace("%bountyId%", id.toString())
+                            .replace("%bountyId%", bounty.id.toString())
                             .replace("%expiryTime%", expiryTime)
                             .replace("%payer%", payerName)
                             .parsePAPI(bounty.target())

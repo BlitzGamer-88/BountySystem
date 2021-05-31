@@ -7,10 +7,10 @@ import me.mattstudios.config.properties.Property
 object Messages : SettingsHolder {
 
     @Path("NOT-YOUR-BOUNTY")
-    val NOT_YOUR_BOUNTY = Property.create("&7Bounty with id &c%bountyId%&7 was not placed by you.")
+    val NOT_YOUR_BOUNTY = Property.create("&7Bounty with id &c%bountyID%&7 was not placed by you.")
 
     @Path("BOUNTY-NOT-FOUND")
-    val BOUNTY_NOT_FOUND = Property.create("&7Could not find bounty with id &c%bountyId%&7.")
+    val BOUNTY_NOT_FOUND = Property.create("&7Could not find bounty with id &c%bountyID%&7.")
 
     @Path("CONFIG-RELOADED")
     val CONFIG_RELOADED = Property.create("&aConfig Reloaded.")
@@ -34,16 +34,16 @@ object Messages : SettingsHolder {
     val BOUNTY_ON_YOURSELF = Property.create("&7You can't place a bounty on yourself.")
 
     @Path("BOUNTY-PLACED-SELF")
-    val BOUNTY_PLACED_SELF = Property.create("&7You've placed a bounty on &a%target%&7 of &e%amount%\$&7. Bounty ID: &a%bountyId%.")
+    val BOUNTY_PLACED_SELF = Property.create("&7You've placed a bounty on &a%target%&7 of &e%amount%\$&7. Bounty ID: &a%bountyID%.")
 
     @Path("BOUNTY-PLACED-EVERYONE")
     val BOUNTY_PLACED_EVERYONE = Property.create("&a%player_name%&7 has placed a &e%amount%$&7 bounty on &a%target%&7's head!")
 
     @Path("BOUNTY-CANCELED")
-    val BOUNTY_CANCELED = Property.create("&7You have canceled the bounty with the id &c%bountyId%&7.")
+    val BOUNTY_CANCELED = Property.create("&7You have canceled the bounty with the id &c%bountyID%&7.")
 
     @Path("BOUNTY-CANCELED-BY-ADMIN")
-    val BOUNTY_CANCELED_ADMIN = Property.create("&7An admin has canceled your bounty with the id &c%bountyId%&7.")
+    val BOUNTY_CANCELED_ADMIN = Property.create("&7An admin has canceled your bounty with the id &c%bountyID%&7.")
 
     @Path("PLAYER-WHITELISTED")
     val PLAYER_WHITELISTED = Property.create("&7You have whitelisted &c%player_name%&7.")

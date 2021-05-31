@@ -17,30 +17,29 @@ class CommandBountyCancel : CommandBase() {
 
     @SubCommand("cancel")
     @Permission("bountysystem.cancel")
-    fun cancel(sender: Player, @Completion("#id") bountyId: String) {
-        if (bountyId.toIntOrNull() == null) {
+    fun cancel(sender: Player, @Completion("#id") bountyID: String) {
+        if (bountyID.toShortOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
         }
 
-        if (!BOUNTIES_LIST.keys.contains(bountyId)) {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
+        if (BOUNTIES_LIST.none { it.id == bountyID.toShort() }) {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
-        val bounty = BOUNTIES_LIST[bountyId] ?: run {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
+        val bounty = BOUNTIES_LIST.firstOrNull { it.id == bountyID.toShort() } ?: run {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
         if (sender.uniqueId != bounty.payer) {
-            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyId%", bountyId).msg(sender)
+            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
         econ.depositPlayer(sender, bounty.amount.toDouble())
-        BOUNTIES_LIST.remove(bountyId)
-        messages[Messages.BOUNTY_CANCELED].replace("%bountyId%", bountyId).msg(sender)
+        BOUNTIES_LIST.remove(bounty)
+        messages[Messages.BOUNTY_CANCELED].replace("%bountyID%", bountyID).msg(sender)
     }
-
 }

@@ -2,6 +2,7 @@ package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.util.msg
 import me.mattstudios.mf.annotations.Command
+import me.mattstudios.mf.annotations.Permission
 import me.mattstudios.mf.annotations.SubCommand
 import me.mattstudios.mf.base.CommandBase
 import org.bukkit.command.CommandSender
@@ -10,6 +11,7 @@ import org.bukkit.command.CommandSender
 class CommandBountyHelp : CommandBase() {
 
     @SubCommand("help")
+    @Permission("bountysystem.help")
     fun help(sender: CommandSender) {
         if (sender.hasPermission("bountysystem.admin")) {
             "&7/bountyadmin cancel <bountyID> &8- &fForce cancel a bounty. The money is returned to the payer.".msg(sender)
@@ -20,5 +22,4 @@ class CommandBountyHelp : CommandBase() {
         "&7/bounty increase <bountyID> <amount> &8- &fIncrease a bounty amount.".msg(sender)
         "&7/bounty cancel <bountyID> &8- &fCancel a bounty you placed.".msg(sender)
     }
-
 }

@@ -23,5 +23,4 @@ class CommandBounty : CommandBase() {
         }
         createGUI().open(sender)
     }
-
 }

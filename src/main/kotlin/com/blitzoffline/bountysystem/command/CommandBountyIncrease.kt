@@ -19,24 +19,24 @@ class CommandBountyIncrease : CommandBase() {
 
     @SubCommand("increase")
     @Permission("bountysystem.increase")
-    fun increase(sender: Player, @Completion("#id") bountyId: String, @Completion("#amount") amount: String) {
-        if (bountyId.toIntOrNull() == null || amount.toIntOrNull() == null) {
+    fun increase(sender: Player, @Completion("#id") bountyID: String, @Completion("#amount") amount: String) {
+        if (bountyID.toShortOrNull() == null || amount.toIntOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
         }
 
-        if (!BOUNTIES_LIST.keys.contains(bountyId)) {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
+        if (BOUNTIES_LIST.none { it.id == bountyID.toShort() }) {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
-        val bounty = BOUNTIES_LIST[bountyId] ?: run {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
+        val bounty = BOUNTIES_LIST.firstOrNull { it.id == bountyID.toShort() } ?: run {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
         if (sender.uniqueId != bounty.payer) {
-            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyId%", bountyId).msg(sender)
+            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
@@ -46,7 +46,7 @@ class CommandBountyIncrease : CommandBase() {
         val savedAmount = bounty.amount
 
         bounty.amount = newAmount
-        BOUNTIES_LIST[bountyId] = bounty
+        BOUNTIES_LIST[BOUNTIES_LIST.indexOf(bounty)] = bounty
 
         val finalAmount = newAmount - ((settings[Bounties.TAX] / 100) * newAmount)
         messages[Messages.AMOUNT_UPDATED].replace("%newAmount%", finalAmount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
