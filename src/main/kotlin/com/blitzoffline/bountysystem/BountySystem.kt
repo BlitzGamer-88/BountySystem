@@ -1,5 +1,6 @@
 package com.blitzoffline.bountysystem
 
+import com.blitzoffline.bountysystem.bounty.BountyHandler
 import com.blitzoffline.bountysystem.command.CommandAdminCancel
 import com.blitzoffline.bountysystem.command.CommandAdminReload
 import com.blitzoffline.bountysystem.command.CommandBounty
@@ -7,33 +8,37 @@ import com.blitzoffline.bountysystem.command.CommandBountyCancel
 import com.blitzoffline.bountysystem.command.CommandBountyHelp
 import com.blitzoffline.bountysystem.command.CommandBountyIncrease
 import com.blitzoffline.bountysystem.command.CommandBountyPlace
+import com.blitzoffline.bountysystem.config.ConfigHandler
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
-import com.blitzoffline.bountysystem.config.loadConfig
-import com.blitzoffline.bountysystem.config.loadMessages
-import com.blitzoffline.bountysystem.config.messages
-import com.blitzoffline.bountysystem.config.settings
-import com.blitzoffline.bountysystem.config.setupEconomy
 import com.blitzoffline.bountysystem.database.Database
 import com.blitzoffline.bountysystem.listener.PlayerDeathListener
 import com.blitzoffline.bountysystem.placeholders.BountyPlaceholders
 import com.blitzoffline.bountysystem.task.BountyExpire
 import com.blitzoffline.bountysystem.task.SaveDataTask
-import com.blitzoffline.bountysystem.util.adventure
 import com.blitzoffline.bountysystem.util.log
 import com.blitzoffline.bountysystem.util.msg
+import me.mattstudios.config.SettingsManager
 import me.mattstudios.mf.base.CommandManager
-import net.kyori.adventure.platform.bukkit.BukkitAudiences
+import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 
+
 class BountySystem : JavaPlugin() {
     private lateinit var commandManager: CommandManager
+    private lateinit var configHandler: ConfigHandler
     private lateinit var updateBounties: BukkitTask
     private lateinit var saveData: BukkitTask
+
+    lateinit var bountyHandler: BountyHandler
     lateinit var database: Database
+
+    lateinit var settings: SettingsManager
+    lateinit var messages: SettingsManager
+    lateinit var economy: Economy
 
     override fun onEnable() {
         try {
@@ -42,16 +47,22 @@ class BountySystem : JavaPlugin() {
             "&cTHIS PLUGIN SHOULD BE USED ON PAPER: papermc.io/download".log()
         }
 
-        loadConfig(this)
-        loadMessages(this)
+        configHandler = ConfigHandler(this)
+        settings = configHandler.loadConfig()
+        messages = configHandler.loadMessages()
+        economy = configHandler.loadEconomy() ?: run {
+            "[BountySystem] Could not find Vault! This plugin is required".log()
+            pluginLoader.disablePlugin(this)
+            return
+        }
 
+        bountyHandler = BountyHandler(this)
         database = Database(this)
-        adventure = BukkitAudiences.create(this)
 
         if (!setupHooks()) pluginLoader.disablePlugin(this)
         BountyPlaceholders(this).register()
         registerListeners(
-            PlayerDeathListener()
+            PlayerDeathListener(this)
         )
 
         commandManager = CommandManager(this, true)
@@ -65,12 +76,12 @@ class BountySystem : JavaPlugin() {
         }
         with (commandManager) {
             register(
-                CommandBounty(),
-                CommandBountyIncrease(),
-                CommandBountyCancel(),
+                CommandBounty(this@BountySystem),
+                CommandBountyIncrease(this@BountySystem),
+                CommandBountyCancel(this@BountySystem),
                 CommandBountyHelp(),
-                CommandBountyPlace(),
-                CommandAdminCancel(),
+                CommandBountyPlace(this@BountySystem),
+                CommandAdminCancel(this@BountySystem),
                 CommandAdminReload(this@BountySystem)
             )
         }
@@ -90,7 +101,7 @@ class BountySystem : JavaPlugin() {
         if(::updateBounties.isInitialized && !updateBounties.isCancelled) updateBounties.cancel()
 
         saveData = SaveDataTask(this).runTaskTimer(this, settings[Settings.INTERVAL_CACHE] * 20L, settings[Settings.INTERVAL_CACHE] * 20L)
-        updateBounties = BountyExpire().runTaskTimerAsynchronously(this, settings[Settings.INTERVAL_EXPIRY] * 20L, settings[Settings.INTERVAL_EXPIRY] * 20L)
+        updateBounties = BountyExpire(this).runTaskTimerAsynchronously(this, settings[Settings.INTERVAL_EXPIRY] * 20L, settings[Settings.INTERVAL_EXPIRY] * 20L)
     }
 
     private fun setupHooks(): Boolean {
@@ -100,10 +111,6 @@ class BountySystem : JavaPlugin() {
         }
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") == null && settings[Settings.REGIONS_USE]) {
             "[BountySystem] Could not find WorldGuard! Disable regions.use if you don't want to use WorldGuard".log()
-            return false
-        }
-        if (!setupEconomy()) {
-            "[BountySystem] Could not find Vault! This plugin is required".log()
             return false
         }
         return true

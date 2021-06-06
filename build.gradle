@@ -62,4 +62,5 @@ shadowJar {
 compileKotlin {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_11
     kotlinOptions.javaParameters = true
+    processResources.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

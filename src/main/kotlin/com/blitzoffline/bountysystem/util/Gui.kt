@@ -1,18 +1,17 @@
 package com.blitzoffline.bountysystem.util
 
-import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
+import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Menu
-import com.blitzoffline.bountysystem.config.settings
 import dev.triumphteam.gui.builder.item.ItemBuilder
 import dev.triumphteam.gui.guis.PaginatedGui
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 
-fun createGUI(): PaginatedGui {
-    val bountyGui = PaginatedGui(6, 45, Component.text(settings[Menu.TITLE]))
+fun createGUI(plugin: BountySystem): PaginatedGui {
+    val bountyGui = PaginatedGui(6, 45, Component.text(plugin.settings[Menu.TITLE]))
     bountyGui.setDefaultClickAction { it.isCancelled = true; }
-    bountyGui.placeItems()
+    bountyGui.placeItems(plugin)
     /*
     Not using this because there is no consistent way to clear the existing items from the GUI yet,
     resulting in the items duplicating each 20 Ticks instead of updating the old ones.
@@ -24,7 +23,8 @@ fun createGUI(): PaginatedGui {
     return bountyGui
 }
 
-fun PaginatedGui.placeItems() {
+fun PaginatedGui.placeItems(plugin: BountySystem) {
+    val settings = plugin.settings
     val paginatedGui = this
     paginatedGui.filler.fillBottom(
         ItemBuilder
@@ -51,13 +51,13 @@ fun PaginatedGui.placeItems() {
 
     )
 
-    for (bounty in BOUNTIES_LIST) {
-        if (bounty.expired()) continue
+    for (bounty in plugin.bountyHandler.BOUNTIES) {
+        if (plugin.bountyHandler.expired(bounty)) continue
 
         val payerName = bounty.payer().name ?: continue
         val finalAmount = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
         val currTime = System.currentTimeMillis()
-        val expiryTime = (settings[Bounties.EXPIRY_TIME] - (currTime - bounty.placedTime) / 1000).format()
+        val expiryTime = (settings[Bounties.EXPIRY_TIME] - (currTime - bounty.placedTime) / 1000).format(settings)
 
         paginatedGui.addItem(
             ItemBuilder

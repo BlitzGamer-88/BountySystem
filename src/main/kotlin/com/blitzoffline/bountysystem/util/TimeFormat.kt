@@ -1,9 +1,9 @@
 package com.blitzoffline.bountysystem.util
 
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.config.messages
+import me.mattstudios.config.SettingsManager
 
-fun Long.format() : String {
+fun Long.format(messages: SettingsManager) : String {
     val totalSeconds = this
 
     val totalMinutes = totalSeconds/60
@@ -14,8 +14,10 @@ fun Long.format() : String {
     val minutes = totalMinutes%60
     val seconds = totalSeconds%60
 
-    return  days.toString()    + messages[Messages.TIME_DAYS]    +
-            hours.toString()   + messages[Messages.TIME_HOURS]   +
-            minutes.toString() + messages[Messages.TIME_MINUTES] +
-            seconds.toString() + messages[Messages.TIME_SECONDS]
+    return StringBuilder()
+        .append(days).append(messages[Messages.TIME_DAYS])
+        .append(hours).append(messages[Messages.TIME_HOURS])
+        .append(minutes).append(messages[Messages.TIME_MINUTES])
+        .append(seconds).append(messages[Messages.TIME_SECONDS])
+        .toString()
 }

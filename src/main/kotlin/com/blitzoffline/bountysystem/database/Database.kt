@@ -1,7 +1,6 @@
 package com.blitzoffline.bountysystem.database
 
 import com.blitzoffline.bountysystem.BountySystem
-import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.util.log
 import com.google.gson.GsonBuilder
@@ -9,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import java.util.logging.Level
 
 class Database(private val plugin: BountySystem) {
+    private val settings = plugin.settings
     private val gson = GsonBuilder()
         .setPrettyPrinting()
         .serializeNulls()
@@ -27,13 +27,12 @@ class Database(private val plugin: BountySystem) {
             val token = object : TypeToken<Collection<Bounty>>() {}.type
             val bounties: Collection<Bounty> = gson.fromJson(plugin.dataFolder.resolve("bounties.json").readText(), token)
 
-            BOUNTIES_LIST.clear()
+            plugin.bountyHandler.BOUNTIES.clear()
             bounties.forEach { bounty ->
-                if (bounty.id < 1000) return@forEach
-                if (bounty.expired()) return@forEach
-                if (bounty.amount <= 0) return@forEach
+                if (!bounty.valid()) return@forEach
+                if (plugin.bountyHandler.expired(bounty)) return@forEach
+                plugin.bountyHandler.BOUNTIES.add(bounty)
                 count++
-                BOUNTIES_LIST.add(bounty)
             }
             if (count == 1) "[BountySystem] Found and loaded 1 bounty.".log()
             else "[BountySystem] Found and loaded $count bounties.".log()
@@ -48,7 +47,7 @@ class Database(private val plugin: BountySystem) {
     fun save() {
         try {
             if (forceStopped) return
-            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(BOUNTIES_LIST))
+            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(plugin.bountyHandler.BOUNTIES))
         }
         catch (ex: java.lang.Exception) {
             plugin.logger.log(Level.SEVERE, "Could not save bounties!", ex)

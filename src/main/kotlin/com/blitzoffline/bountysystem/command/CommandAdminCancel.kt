@@ -1,9 +1,7 @@
 package com.blitzoffline.bountysystem.command
 
-import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
-import com.blitzoffline.bountysystem.config.econ
+import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.config.messages
 import com.blitzoffline.bountysystem.util.msg
 import me.mattstudios.mf.annotations.Alias
 import me.mattstudios.mf.annotations.Command
@@ -15,28 +13,30 @@ import org.bukkit.command.CommandSender
 
 @Alias("badmin")
 @Command("bountyadmin")
-class CommandAdminCancel : CommandBase() {
+class CommandAdminCancel(private val plugin: BountySystem) : CommandBase() {
+    private val messages = plugin.messages
 
     @SubCommand("cancel")
     @Permission("bountysystem.admin")
     fun cancel(sender: CommandSender, @Completion("#id") bountyID: String) {
+
         if (bountyID.toShortOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
         }
 
-        if (BOUNTIES_LIST.none { it.id == bountyID.toShort() }) {
+        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyID.toShort() }) {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
-        val bounty = BOUNTIES_LIST.firstOrNull { it.id == bountyID.toShort() } ?: run {
+        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyID.toShort() } ?: run {
             messages[Messages.BOUNTY_NOT_FOUND].msg(sender)
             return
         }
 
-        econ.depositPlayer(bounty.payer(), bounty.amount.toDouble())
-        BOUNTIES_LIST.remove(bounty)
+        plugin.economy.depositPlayer(bounty.payer(), bounty.amount.toDouble())
+        plugin.bountyHandler.BOUNTIES.remove(bounty)
 
         messages[Messages.BOUNTY_CANCELED]
             .replace("%bountyId%", bountyID)

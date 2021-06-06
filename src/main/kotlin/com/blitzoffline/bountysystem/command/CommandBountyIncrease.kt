@@ -1,11 +1,8 @@
 package com.blitzoffline.bountysystem.command
 
-import com.blitzoffline.bountysystem.bounty.BOUNTIES_LIST
-import com.blitzoffline.bountysystem.config.econ
+import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.config.messages
-import com.blitzoffline.bountysystem.config.settings
 import com.blitzoffline.bountysystem.util.msg
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Completion
@@ -15,7 +12,9 @@ import me.mattstudios.mf.base.CommandBase
 import org.bukkit.entity.Player
 
 @Command("bounty")
-class CommandBountyIncrease : CommandBase() {
+class CommandBountyIncrease(private val plugin: BountySystem) : CommandBase() {
+    private val messages = plugin.messages
+    private val settings = plugin.settings
 
     @SubCommand("increase")
     @Permission("bountysystem.increase")
@@ -25,12 +24,12 @@ class CommandBountyIncrease : CommandBase() {
             return
         }
 
-        if (BOUNTIES_LIST.none { it.id == bountyID.toShort() }) {
+        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyID.toShort() }) {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
 
-        val bounty = BOUNTIES_LIST.firstOrNull { it.id == bountyID.toShort() } ?: run {
+        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyID.toShort() } ?: run {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
             return
         }
@@ -41,12 +40,12 @@ class CommandBountyIncrease : CommandBase() {
         }
 
         val newAmount = bounty.amount + amount.toInt()
-        econ.withdrawPlayer(sender, amount.toDouble())
+        plugin.economy.withdrawPlayer(sender, amount.toDouble())
 
         val savedAmount = bounty.amount
 
         bounty.amount = newAmount
-        BOUNTIES_LIST[BOUNTIES_LIST.indexOf(bounty)] = bounty
+        plugin.bountyHandler.BOUNTIES[plugin.bountyHandler.BOUNTIES.indexOf(bounty)] = bounty
 
         val finalAmount = newAmount - ((settings[Bounties.TAX] / 100) * newAmount)
         messages[Messages.AMOUNT_UPDATED].replace("%newAmount%", finalAmount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)
