@@ -34,11 +34,16 @@ class BountySystem : JavaPlugin() {
     private lateinit var saveData: BukkitTask
 
     lateinit var bountyHandler: BountyHandler
+        private set
     lateinit var database: Database
+        private set
 
     lateinit var settings: SettingsManager
+        private set
     lateinit var messages: SettingsManager
+        private set
     lateinit var economy: Economy
+        private set
 
     override fun onEnable() {
         try {
