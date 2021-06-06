@@ -4,8 +4,8 @@ import com.blitzoffline.bountysystem.config.holder.Messages
 import me.mattstudios.config.SettingsManager
 
 fun Long.format(messages: SettingsManager) : String {
-    val totalSeconds = this
 
+    val totalSeconds = this
     val totalMinutes = totalSeconds/60
     val totalHours = totalMinutes/60
 
