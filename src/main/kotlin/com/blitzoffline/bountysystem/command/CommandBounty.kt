@@ -21,6 +21,6 @@ class CommandBounty(private val plugin: BountySystem) : CommandBase() {
             messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
             return
         }
-        createGUI().open(sender)
+        createGUI(plugin).open(sender)
     }
 }

@@ -50,7 +50,6 @@ class Database(private val plugin: BountySystem) {
                 else -> throw ex
             }
         }
-
     }
 
     fun save() {
