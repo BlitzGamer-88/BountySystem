@@ -48,14 +48,14 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        val bountyID = plugin.bountyHandler.getRandomId()
-        if (bountyID == 0.toShort()) {
+        val bountyId = plugin.bountyHandler.getRandomId()
+        if (bountyId == 0.toShort()) {
             return
         }
 
         plugin.economy.withdrawPlayer(sender, amount.toDouble())
         val bounty = Bounty(
-            bountyID,
+            bountyId,
             sender.uniqueId,
             target.uniqueId,
             amount.toInt(),
@@ -68,13 +68,13 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
         messages[Messages.BOUNTY_PLACED_SELF]
             .replace("%target%", target.name)
             .replace("%amount%", afterTax.toString())
-            .replace("%bountyId%", bountyID.toString())
+            .replace("%bountyId%", bountyId.toString())
             .msg(sender)
 
         messages[Messages.BOUNTY_PLACED_EVERYONE]
             .replace("%target%", target.name)
             .replace("%amount%", afterTax.toString())
-            .replace("%bountyId%", bountyID.toString())
+            .replace("%bountyId%", bountyId.toString())
             .parsePAPI(sender)
             .broadcast()
     }

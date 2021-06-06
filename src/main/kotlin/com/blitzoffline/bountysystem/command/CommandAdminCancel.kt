@@ -18,19 +18,19 @@ class CommandAdminCancel(private val plugin: BountySystem) : CommandBase() {
 
     @SubCommand("cancel")
     @Permission("bountysystem.admin")
-    fun cancel(sender: CommandSender, @Completion("#id") bountyID: String) {
+    fun cancel(sender: CommandSender, @Completion("#id") bountyId: String) {
 
-        if (bountyID.toShortOrNull() == null) {
+        if (bountyId.toShortOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
         }
 
-        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyID.toShort() }) {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
+        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyId.toShort() }) {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyID.toShort() } ?: run {
+        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyId.toShort() } ?: run {
             messages[Messages.BOUNTY_NOT_FOUND].msg(sender)
             return
         }
@@ -39,12 +39,12 @@ class CommandAdminCancel(private val plugin: BountySystem) : CommandBase() {
         plugin.bountyHandler.BOUNTIES.remove(bounty)
 
         messages[Messages.BOUNTY_CANCELED]
-            .replace("%bountyId%", bountyID)
+            .replace("%bountyId%", bountyId)
             .msg(sender)
 
         bounty.payer().player?.let {
             messages[Messages.BOUNTY_CANCELED_ADMIN]
-                .replace("%bountyId%", bountyID)
+                .replace("%bountyId%", bountyId)
                 .msg(it)
         }
     }

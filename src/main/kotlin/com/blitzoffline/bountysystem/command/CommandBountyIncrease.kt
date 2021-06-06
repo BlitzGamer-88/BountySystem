@@ -18,24 +18,24 @@ class CommandBountyIncrease(private val plugin: BountySystem) : CommandBase() {
 
     @SubCommand("increase")
     @Permission("bountysystem.increase")
-    fun increase(sender: Player, @Completion("#id") bountyID: String, @Completion("#amount") amount: String) {
-        if (bountyID.toShortOrNull() == null || amount.toIntOrNull() == null) {
+    fun increase(sender: Player, @Completion("#id") bountyId: String, @Completion("#amount") amount: String) {
+        if (bountyId.toShortOrNull() == null || amount.toIntOrNull() == null) {
             messages[Messages.WRONG_USAGE].msg(sender)
             return
         }
 
-        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyID.toShort() }) {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
+        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyId.toShort() }) {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyID.toShort() } ?: run {
-            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyID%", bountyID).msg(sender)
+        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyId.toShort() } ?: run {
+            messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
         if (sender.uniqueId != bounty.payer) {
-            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyID%", bountyID).msg(sender)
+            messages[Messages.NOT_YOUR_BOUNTY].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 

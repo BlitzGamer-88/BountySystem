@@ -71,7 +71,7 @@ class BountySystem : JavaPlugin() {
             register("cmd.no.permission") { sender -> messages[Messages.NO_PERMISSION].msg(sender) }
         }
         with (commandManager.completionHandler) {
-            register("#id") { listOf("<bountyID>") }
+            register("#id") { listOf("<bountyId>") }
             register("#amount") { listOf("<amount>") }
         }
         with (commandManager) {

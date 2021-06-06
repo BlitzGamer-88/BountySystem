@@ -5,14 +5,13 @@ import com.blitzoffline.bountysystem.config.holder.Bounties
 
 
 class BountyHandler(plugin: BountySystem) {
-    private val messages = plugin.messages
     private val settings = plugin.settings
     
     val BOUNTIES = mutableListOf<Bounty>()
 
     fun getRandomId(): Short {
-        val existentIDs = BOUNTIES.map { it.id }
-        val unusedIds = (1000..Short.MAX_VALUE).map { it.toShort() }.filter { !existentIDs.contains(it) }
+        val existentIds = BOUNTIES.map { it.id }
+        val unusedIds = (1000..Short.MAX_VALUE).map { it.toShort() }.filter { !existentIds.contains(it) }
         return if (unusedIds.isEmpty()) 0.toShort() else unusedIds.random()
     }
 
