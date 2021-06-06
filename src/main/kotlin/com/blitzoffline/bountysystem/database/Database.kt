@@ -4,11 +4,15 @@ import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.util.log
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonIOException
+import com.google.gson.JsonParseException
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import java.io.IOException
+import java.lang.Exception
 import java.util.logging.Level
 
 class Database(private val plugin: BountySystem) {
-    private val settings = plugin.settings
     private val gson = GsonBuilder()
         .setPrettyPrinting()
         .serializeNulls()
@@ -36,12 +40,17 @@ class Database(private val plugin: BountySystem) {
             }
             if (count == 1) "[BountySystem] Found and loaded 1 bounty.".log()
             else "[BountySystem] Found and loaded $count bounties.".log()
+        } catch (ex: Exception) {
+            when (ex) {
+                is JsonParseException, is JsonSyntaxException -> {
+                    forceStopped = true
+                    plugin.logger.log(Level.SEVERE, "Could not load the saved bounties due to a json syntax error in bounties.json.", ex)
+                    plugin.pluginLoader.disablePlugin(plugin)
+                }
+                else -> throw ex
+            }
         }
-        catch (ex: java.lang.Exception) {
-            forceStopped = true
-            plugin.logger.log(Level.SEVERE, "Could not load the saved bounties!", ex)
-            plugin.pluginLoader.disablePlugin(plugin)
-        }
+
     }
 
     fun save() {
@@ -49,7 +58,7 @@ class Database(private val plugin: BountySystem) {
             if (forceStopped) return
             plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(plugin.bountyHandler.BOUNTIES))
         }
-        catch (ex: java.lang.Exception) {
+        catch (ex: JsonIOException) {
             plugin.logger.log(Level.SEVERE, "Could not save bounties!", ex)
         }
     }

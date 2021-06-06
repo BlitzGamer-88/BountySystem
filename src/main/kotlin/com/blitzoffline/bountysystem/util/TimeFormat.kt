@@ -9,15 +9,10 @@ fun Long.format(messages: SettingsManager) : String {
     val totalMinutes = totalSeconds/60
     val totalHours = totalMinutes/60
 
-    val days = totalHours/24
-    val hours = totalHours%24
-    val minutes = totalMinutes%60
-    val seconds = totalSeconds%60
-
     return StringBuilder()
-        .append(days).append(messages[Messages.TIME_DAYS])
-        .append(hours).append(messages[Messages.TIME_HOURS])
-        .append(minutes).append(messages[Messages.TIME_MINUTES])
-        .append(seconds).append(messages[Messages.TIME_SECONDS])
+        .append(totalHours/24).append(messages[Messages.TIME_DAYS])
+        .append(totalHours%24).append(messages[Messages.TIME_HOURS])
+        .append(totalMinutes%60).append(messages[Messages.TIME_MINUTES])
+        .append(totalSeconds%60).append(messages[Messages.TIME_SECONDS])
         .toString()
 }
