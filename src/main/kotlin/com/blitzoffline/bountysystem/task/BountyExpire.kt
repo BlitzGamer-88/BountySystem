@@ -9,11 +9,11 @@ class BountyExpire(private val plugin: BountySystem) : BukkitRunnable() {
     private val messages = plugin.messages
 
     override fun run() {
-        for (bounty in plugin.bountyHandler.BOUNTIES) {
+        for (bounty in plugin.bountyHandler.bounties) {
             if (!plugin.bountyHandler.expired(bounty)) continue
 
             plugin.economy.depositPlayer(bounty.payer(), bounty.amount.toDouble())
-            plugin.bountyHandler.BOUNTIES.remove(bounty)
+            plugin.bountyHandler.bounties.remove(bounty)
 
             bounty.payer().player?.let {
                 messages[Messages.BOUNTY_EXPIRED]

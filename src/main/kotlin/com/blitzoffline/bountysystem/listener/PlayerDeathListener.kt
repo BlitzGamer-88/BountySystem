@@ -24,7 +24,7 @@ class PlayerDeathListener(private val plugin: BountySystem) : Listener {
         if (settings[Settings.WORLDS_USE] && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.name) && !settings[Settings.WORLDS_LIST].containsIgnoreCase(killer.world.uid.toString())) return
         if (settings[Settings.REGIONS_USE] && !killer.location.inRegion(settings)) return
 
-        for (bounty in plugin.bountyHandler.BOUNTIES) {
+        for (bounty in plugin.bountyHandler.bounties) {
             if (bounty.target != entity.uniqueId) continue
             if (bounty.payer == killer.uniqueId) continue
             if (plugin.bountyHandler.expired(bounty)) continue
@@ -33,7 +33,7 @@ class PlayerDeathListener(private val plugin: BountySystem) : Listener {
 
             plugin.economy.depositPlayer(killer, afterTax.toDouble())
 
-            plugin.bountyHandler.BOUNTIES.remove(bounty)
+            plugin.bountyHandler.bounties.remove(bounty)
 
             messages[Messages.BOUNTY_RECEIVED_BROADCAST]
                 .replace("%amount%", afterTax.toString())

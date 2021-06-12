@@ -51,7 +51,7 @@ fun PaginatedGui.placeItems(plugin: BountySystem) {
 
     )
 
-    for (bounty in plugin.bountyHandler.BOUNTIES) {
+    for (bounty in plugin.bountyHandler.bounties) {
         if (plugin.bountyHandler.expired(bounty)) continue
 
         val payerName = bounty.payer().name ?: continue

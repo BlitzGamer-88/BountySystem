@@ -22,12 +22,12 @@ class CommandBountyCancel(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyId.toShort() }) {
+        if (plugin.bountyHandler.bounties.none { it.id == bountyId.toShort() }) {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyId.toShort() } ?: run {
+        val bounty = plugin.bountyHandler.bounties.firstOrNull { it.id == bountyId.toShort() } ?: run {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
@@ -38,7 +38,7 @@ class CommandBountyCancel(private val plugin: BountySystem) : CommandBase() {
         }
 
         plugin.economy.depositPlayer(sender, bounty.amount.toDouble())
-        plugin.bountyHandler.BOUNTIES.remove(bounty)
+        plugin.bountyHandler.bounties.remove(bounty)
         messages[Messages.BOUNTY_CANCELED].replace("%bountyId%", bountyId).msg(sender)
     }
 }

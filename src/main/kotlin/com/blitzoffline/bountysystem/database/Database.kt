@@ -31,11 +31,11 @@ class Database(private val plugin: BountySystem) {
             val token = object : TypeToken<Collection<Bounty>>() {}.type
             val bounties: Collection<Bounty> = gson.fromJson(plugin.dataFolder.resolve("bounties.json").readText(), token)
 
-            plugin.bountyHandler.BOUNTIES.clear()
+            plugin.bountyHandler.bounties.clear()
             bounties.forEach { bounty ->
                 if (!bounty.valid()) return@forEach
                 if (plugin.bountyHandler.expired(bounty)) return@forEach
-                plugin.bountyHandler.BOUNTIES.add(bounty)
+                plugin.bountyHandler.bounties.add(bounty)
                 count++
             }
             if (count == 1) "[BountySystem] Found and loaded 1 bounty.".log()
@@ -55,7 +55,7 @@ class Database(private val plugin: BountySystem) {
     fun save() {
         try {
             if (forceStopped) return
-            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(plugin.bountyHandler.BOUNTIES))
+            plugin.dataFolder.resolve("bounties.json").writeText(gson.toJson(plugin.bountyHandler.bounties))
         }
         catch (ex: JsonIOException) {
             plugin.logger.log(Level.SEVERE, "Could not save bounties!", ex)

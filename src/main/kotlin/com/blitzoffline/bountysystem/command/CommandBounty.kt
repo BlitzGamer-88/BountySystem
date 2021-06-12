@@ -17,7 +17,7 @@ class CommandBounty(private val plugin: BountySystem) : CommandBase() {
     @Default
     @Permission("bountysystem.open")
     fun default(sender: Player) {
-        if (plugin.bountyHandler.BOUNTIES.isEmpty()) {
+        if (plugin.bountyHandler.bounties.isEmpty()) {
             messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
             return
         }

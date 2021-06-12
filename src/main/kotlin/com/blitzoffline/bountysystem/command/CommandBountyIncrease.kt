@@ -24,12 +24,12 @@ class CommandBountyIncrease(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        if (plugin.bountyHandler.BOUNTIES.none { it.id == bountyId.toShort() }) {
+        if (plugin.bountyHandler.bounties.none { it.id == bountyId.toShort() }) {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
 
-        val bounty = plugin.bountyHandler.BOUNTIES.firstOrNull { it.id == bountyId.toShort() } ?: run {
+        val bounty = plugin.bountyHandler.bounties.firstOrNull { it.id == bountyId.toShort() } ?: run {
             messages[Messages.BOUNTY_NOT_FOUND].replace("%bountyId%", bountyId).msg(sender)
             return
         }
@@ -45,7 +45,7 @@ class CommandBountyIncrease(private val plugin: BountySystem) : CommandBase() {
         val savedAmount = bounty.amount
 
         bounty.amount = newAmount
-        plugin.bountyHandler.BOUNTIES[plugin.bountyHandler.BOUNTIES.indexOf(bounty)] = bounty
+        plugin.bountyHandler.bounties[plugin.bountyHandler.bounties.indexOf(bounty)] = bounty
 
         val finalAmount = newAmount - ((settings[Bounties.TAX] / 100) * newAmount)
         messages[Messages.AMOUNT_UPDATED].replace("%newAmount%", finalAmount.toString()).replace("%oldAmount%", savedAmount.toString()).msg(sender)

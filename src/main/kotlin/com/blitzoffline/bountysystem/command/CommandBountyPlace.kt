@@ -43,7 +43,7 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
             return
         }
 
-        if (plugin.bountyHandler.BOUNTIES.filter { it.payer == sender.uniqueId }.size >= settings[Bounties.MAX_AMOUNT]) {
+        if (plugin.bountyHandler.bounties.filter { it.payer == sender.uniqueId }.size >= settings[Bounties.MAX_AMOUNT]) {
             messages[Messages.MAX_BOUNTIES].msg(sender)
             return
         }
@@ -61,7 +61,7 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
             amount.toInt(),
             System.currentTimeMillis()
         )
-        plugin.bountyHandler.BOUNTIES.add(bounty)
+        plugin.bountyHandler.bounties.add(bounty)
 
         val afterTax = bounty.amount - ((settings[Bounties.TAX] / 100) * bounty.amount)
 
