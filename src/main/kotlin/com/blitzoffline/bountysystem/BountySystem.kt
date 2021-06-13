@@ -16,10 +16,13 @@ import com.blitzoffline.bountysystem.listener.PlayerDeathListener
 import com.blitzoffline.bountysystem.placeholders.BountyPlaceholders
 import com.blitzoffline.bountysystem.task.BountyExpire
 import com.blitzoffline.bountysystem.task.SaveDataTask
-import com.blitzoffline.bountysystem.util.log
-import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.sendMessage
+import java.util.logging.Level
 import me.mattstudios.config.SettingsManager
+import me.mattstudios.mf.base.CommandBase
 import me.mattstudios.mf.base.CommandManager
+import me.mattstudios.mf.base.components.CompletionResolver
+import me.mattstudios.mf.base.components.MessageResolver
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
@@ -49,20 +52,22 @@ class BountySystem : JavaPlugin() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig")
         } catch (ignored: ClassNotFoundException) {
-            "&cTHIS PLUGIN SHOULD BE USED ON PAPER: papermc.io/download".log()
+            logger.log(Level.INFO, "&cTHIS PLUGIN SHOULD BE USED ON PAPER: papermc.io/download")
         }
 
         configHandler = ConfigHandler(this)
         settings = configHandler.loadConfig()
         messages = configHandler.loadMessages()
         economy = configHandler.loadEconomy() ?: run {
-            "[BountySystem] Could not find Vault! This plugin is required".log()
+            logger.log(Level.SEVERE, "[BountySystem] Could not find Vault! This plugin is required")
             pluginLoader.disablePlugin(this)
             return
         }
 
         bountyHandler = BountyHandler(this)
+
         database = Database(this)
+        database.load()
 
         if (!setupHooks()) pluginLoader.disablePlugin(this)
         BountyPlaceholders(this).register()
@@ -71,34 +76,30 @@ class BountySystem : JavaPlugin() {
         )
 
         commandManager = CommandManager(this, true)
-        with (commandManager.messageHandler) {
-            register("cmd.wrong.usage") { sender -> messages[Messages.WRONG_USAGE].msg(sender) }
-            register("cmd.no.permission") { sender -> messages[Messages.NO_PERMISSION].msg(sender) }
-        }
-        with (commandManager.completionHandler) {
-            register("#id") { listOf("<bountyId>") }
-            register("#amount") { listOf("<amount>") }
-        }
-        with (commandManager) {
-            register(
-                CommandBounty(this@BountySystem),
-                CommandBountyIncrease(this@BountySystem),
-                CommandBountyCancel(this@BountySystem),
-                CommandBountyHelp(),
-                CommandBountyPlace(this@BountySystem),
-                CommandAdminCancel(this@BountySystem),
-                CommandAdminReload(this@BountySystem)
-            )
-        }
+
+        registerMessage("cmd.wrong.usage") { messages[Messages.WRONG_USAGE].sendMessage(it) }
+        registerMessage("cmd.no.permission") { messages[Messages.NO_PERMISSION].sendMessage(it) }
+
+        registerCompletion("#id") { listOf("<bountyId>") }
+        registerCompletion("#amount") { listOf("<amount>") }
+
+        registerCommands(
+            CommandAdminCancel(this),
+            CommandAdminReload(this),
+            CommandBounty(this),
+            CommandBountyCancel(this),
+            CommandBountyHelp(),
+            CommandBountyIncrease(this),
+            CommandBountyPlace(this)
+        )
 
         registerTasks()
-        database.load()
-        "[BountySystem] Plugin enabled successfully!".log()
+        logger.log(Level.INFO, "[BountySystem] Plugin enabled successfully!")
     }
 
     override fun onDisable() {
         database.save()
-        "[BountySystem] Plugin disabled successfully!".log()
+        logger.log(Level.INFO, "[BountySystem] Plugin disabled successfully!")
     }
 
     private fun registerTasks() {
@@ -111,17 +112,20 @@ class BountySystem : JavaPlugin() {
 
     private fun setupHooks(): Boolean {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            "[BountySystem] Could not find PlaceholderAPI! This plugin is required".log()
+            logger.log(Level.SEVERE, "[BountySystem] Could not find PlaceholderAPI! This plugin is required")
             return false
         }
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") == null && settings[Settings.REGIONS_USE]) {
-            "[BountySystem] Could not find WorldGuard! Disable regions.use if you don't want to use WorldGuard".log()
+            logger.log(Level.SEVERE, "[BountySystem] Could not find WorldGuard! Disable regions.use if you don't want to use WorldGuard")
             return false
         }
         return true
     }
 
     private fun registerListeners(vararg listeners: Listener) = listeners.forEach { server.pluginManager.registerEvents(it, this) }
+    private fun registerCommands(vararg commands: CommandBase) = commands.forEach(commandManager::register)
+    private fun registerCompletion(completionId: String, resolver: CompletionResolver) = commandManager.completionHandler.register(completionId, resolver)
+    private fun registerMessage(messageId: String, resolver: MessageResolver) = commandManager.messageHandler.register(messageId, resolver)
 
     fun saveDefaultMessages() {
         if (dataFolder.resolve("messages.yml").exists()) return

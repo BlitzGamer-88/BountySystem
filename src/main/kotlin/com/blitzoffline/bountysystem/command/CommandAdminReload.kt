@@ -2,7 +2,7 @@ package com.blitzoffline.bountysystem.command
 
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.sendMessage
 import me.mattstudios.mf.annotations.Alias
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Permission
@@ -20,6 +20,6 @@ class CommandAdminReload(private val plugin: BountySystem) : CommandBase() {
         plugin.database.save()
         plugin.settings.reload()
         plugin.messages.reload()
-        plugin.messages[Messages.CONFIG_RELOADED].msg(sender)
+        plugin.messages[Messages.CONFIG_RELOADED].sendMessage(sender)
     }
 }

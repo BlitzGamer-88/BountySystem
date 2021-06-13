@@ -6,7 +6,6 @@ import com.blitzoffline.bountysystem.config.holder.Bounties
 
 class BountyHandler(plugin: BountySystem) {
     private val settings = plugin.settings
-    
     val bounties = mutableListOf<Bounty>()
 
     fun getRandomId(): Short {

@@ -4,8 +4,8 @@ import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.bounty.Bounty
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
-import com.blitzoffline.bountysystem.util.broadcast
-import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.broadcastMessage
+import com.blitzoffline.bountysystem.util.sendMessage
 import com.blitzoffline.bountysystem.util.parsePAPI
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Completion
@@ -24,27 +24,27 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
     fun place(sender: Player, @Completion("#players") target: Player, @Completion("#amount") amount: String) {
 
         if (amount.toIntOrNull() == null) {
-            messages[Messages.WRONG_USAGE].msg(sender)
+            messages[Messages.WRONG_USAGE].sendMessage(sender)
             return
         }
 
         if (target == sender) {
-            messages[Messages.BOUNTY_ON_YOURSELF].msg(sender)
+            messages[Messages.BOUNTY_ON_YOURSELF].sendMessage(sender)
             return
         }
 
         if (target.hasPermission("bountysystem.bypass")) {
-            messages[Messages.TARGET_WHITELISTED].msg(sender)
+            messages[Messages.TARGET_WHITELISTED].sendMessage(sender)
             return
         }
 
         if (plugin.economy.getBalance(sender) < amount.toDouble()) {
-            messages[Messages.NOT_ENOUGH_MONEY].msg(sender)
+            messages[Messages.NOT_ENOUGH_MONEY].sendMessage(sender)
             return
         }
 
         if (plugin.bountyHandler.bounties.filter { it.payer == sender.uniqueId }.size >= settings[Bounties.MAX_AMOUNT]) {
-            messages[Messages.MAX_BOUNTIES].msg(sender)
+            messages[Messages.MAX_BOUNTIES].sendMessage(sender)
             return
         }
 
@@ -69,13 +69,13 @@ class CommandBountyPlace(private val plugin: BountySystem) : CommandBase() {
             .replace("%target%", target.name)
             .replace("%amount%", afterTax.toString())
             .replace("%bountyId%", bountyId.toString())
-            .msg(sender)
+            .sendMessage(sender)
 
         messages[Messages.BOUNTY_PLACED_EVERYONE]
             .replace("%target%", target.name)
             .replace("%amount%", afterTax.toString())
             .replace("%bountyId%", bountyId.toString())
             .parsePAPI(sender)
-            .broadcast()
+            .broadcastMessage()
     }
 }

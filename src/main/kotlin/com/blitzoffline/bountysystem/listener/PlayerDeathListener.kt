@@ -4,10 +4,9 @@ import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Bounties
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.config.holder.Settings
-import com.blitzoffline.bountysystem.util.broadcast
+import com.blitzoffline.bountysystem.util.broadcastMessage
 import com.blitzoffline.bountysystem.util.containsIgnoreCase
 import com.blitzoffline.bountysystem.util.inRegion
-import com.blitzoffline.bountysystem.util.msg
 import com.blitzoffline.bountysystem.util.parsePAPI
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,12 +38,12 @@ class PlayerDeathListener(private val plugin: BountySystem) : Listener {
                 .replace("%amount%", afterTax.toString())
                 .replace("%target%", entity.name)
                 .parsePAPI(killer)
-                .broadcast()
+                .broadcastMessage()
 
             messages[Messages.BOUNTY_RECEIVED]
                 .replace("%amount%", afterTax.toString())
                 .replace("%target%", entity.name )
-                .msg(killer)
+                .sendMessage(killer)
         }
     }
 

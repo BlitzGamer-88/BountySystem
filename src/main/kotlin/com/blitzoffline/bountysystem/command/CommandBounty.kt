@@ -3,7 +3,7 @@ package com.blitzoffline.bountysystem.command
 import com.blitzoffline.bountysystem.BountySystem
 import com.blitzoffline.bountysystem.config.holder.Messages
 import com.blitzoffline.bountysystem.util.createGUI
-import com.blitzoffline.bountysystem.util.msg
+import com.blitzoffline.bountysystem.util.sendMessage
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Default
 import me.mattstudios.mf.annotations.Permission
@@ -18,7 +18,7 @@ class CommandBounty(private val plugin: BountySystem) : CommandBase() {
     @Permission("bountysystem.open")
     fun default(sender: Player) {
         if (plugin.bountyHandler.bounties.isEmpty()) {
-            messages[Messages.NO_BOUNTIES_FOUND].msg(sender)
+            messages[Messages.NO_BOUNTIES_FOUND].sendMessage(sender)
             return
         }
         createGUI(plugin).open(sender)
