@@ -10,25 +10,25 @@ import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 
 class ConfigHandler(private val plugin: BountySystem) {
-    fun loadConfig(): SettingsManager {
-        val confFile = plugin.dataFolder.resolve("config.yml")
-        if (!confFile.exists()) plugin.saveDefaultConfig()
+    fun fetchSettings(): SettingsManager {
+        val file = plugin.dataFolder.resolve("config.yml")
+        if (!file.exists()) plugin.saveDefaultConfig()
         return SettingsManager
-            .from(confFile)
+            .from(file)
             .configurationData(Bounties::class.java, Menu::class.java, Settings::class.java)
             .create()
     }
 
-    fun loadMessages(): SettingsManager {
-        val msgFile = plugin.dataFolder.resolve("config.yml")
-        if (!msgFile.exists()) plugin.saveDefaultMessages()
+    fun fetchMessages(): SettingsManager {
+        val file = plugin.dataFolder.resolve("config.yml")
+        if (!file.exists()) plugin.saveDefaultMessages()
         return SettingsManager
-            .from(msgFile)
+            .from(file)
             .configurationData(Messages::class.java)
             .create()
     }
 
-    fun loadEconomy(): Economy? {
+    fun fetchEconomy(): Economy? {
         if (Bukkit.getServer().pluginManager.getPlugin("Vault") == null) return null
         val rsp = Bukkit.getServer().servicesManager.getRegistration(Economy::class.java) ?: return null
         return rsp.provider

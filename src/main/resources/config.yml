@@ -1,6 +1,6 @@
 #  IF NEITHER REGIONS OR WORLDS ARE ENABLED, BOUNTIES CAN BE CLAIMED ANYWHERE.
 regions:
-  # If this option is enabled, The plugin will consider a kill only if its in one of the listed regions.
+  # If this option is enabled, The plugin will consider a kill only if its in one of the listed worldguard regions.
   use: false
   list:
     - warzone
@@ -20,12 +20,6 @@ bounties:
   # Specify how much from the bounty does the sever take. (percent)
   # Set it to 0 so the player that kills the target gets 100% of the bounty.
   tax: 5
-
-intervals:
-  # Interval to check if any bounties have expired (in seconds)
-  expiry: 300
-  # Interval to save cached data (in seconds)
-  cache: 300
 
 # GUIs SETTINGS
 menu:

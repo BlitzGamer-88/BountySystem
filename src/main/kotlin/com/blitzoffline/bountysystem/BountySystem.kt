@@ -56,9 +56,9 @@ class BountySystem : JavaPlugin() {
         }
 
         configHandler = ConfigHandler(this)
-        settings = configHandler.loadConfig()
-        messages = configHandler.loadMessages()
-        economy = configHandler.loadEconomy() ?: run {
+        settings = configHandler.fetchSettings()
+        messages = configHandler.fetchMessages()
+        economy = configHandler.fetchEconomy() ?: run {
             logger.log(Level.SEVERE, "[BountySystem] Could not find Vault! This plugin is required")
             pluginLoader.disablePlugin(this)
             return
